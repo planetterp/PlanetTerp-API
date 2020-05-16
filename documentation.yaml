@@ -1,13 +1,15 @@
 openapi: 3.0.0
 servers:
-# Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/PlanetTerp3/PlanetTerp/1.0.0
-  - description: PlanetTerp API
+  - description: "PlanetTerp API"
     url: https://api.planetterp.com/v1
 info:
-  description: PlanetTerp API
-  version: "1.0.0"
+  description: >
+    Welcome to <a href="https://planetterp.com">PlanetTerp</a>'s API. This API provides access to data relating to courses, professors, and grade data at the <a href="https://umd.edu">University of Maryland &mdash; College Park</a> (UMD).<br /><br />
+    The primary purpose of this API is to provide access to grade data. There is already a student-run API that provides access to professor and grade data: <a href="https://umd.io">umd.io</a>.<br /><br />
+    The course and professor data on this website was obtained using a combination of umd.io and <a href="https://app.testudo.umd.edu/soc/">UMD's Schedule of Classes</a>. The grade data is from the <a href="https://www.irpa.umd.edu"">UMD Office of Institutional Research, Planning &amp; Assessment</a> (IRPA) and obtained through <a href="https://www.umd.edu/administration/public-information-request">a request</a> under <a href="http://www.marylandattorneygeneral.gov/OpenGov%20Documents/PIA_manual_printable.pdf">the state of Maryland's Public Information Act</a> (PIA).<br /><br/>
+    The base URL of the API is <a href="https://api.planetterp.com/v1">https://api.planetterp.com/v1</a>.<br /><br />
+    For support, please email <a href="mailto:admin@planetterp.com">admin@planetterp.com</a>.
+  version: "1"
   title: PlanetTerp API
   contact:
     email: admin@planetterp.com
@@ -25,17 +27,18 @@ paths:
       tags:
         - Courses
       summary: Get courses
-      description: Get all courses, in alphabetical order
+      description: "Get all courses, in alphabetical order."
       parameters:
         - in: query
           name: department
-          description: Only get courses in a department. Must be four characters.
-          required: false
+          description: "<em>Optional.</em> Only get courses in a department. Must be four characters. Default: all departments"
+          required: true
+          example: MATH
           schema:
             type: string
         - in: query
           name: reviews
-          description: Show reviews for the course (reviews for professors that taught the course and listed this course as the one being reviewed)
+          description: "<em>Optional.</em> Show reviews for the course (reviews for professors that taught the course and listed this course as the one being reviewed). Default: <code>false</code>"
           required: false
           schema:
             type: boolean
@@ -43,40 +46,34 @@ paths:
         - $ref: "#/components/parameters/offset"
       responses:
         '200':
-          description: Returns courses matching query
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Course'
+          description: "Returns courses matching query"
         '400':
-          description: bad input parameter
-  /professors:
+          description: "bad input parameter"
+  /professor:
     get:
+      operationId: Get a professor
       tags:
         - Professors
-      summary: Get professors
-      description: Get all professors, in alphabetical order
+      summary: Get a professor.
+      description: "Get a professor."
       parameters:
         - in: query
-          name: type
-          description: Show only reviews for professors or teaching assistants
-          required: false
+          name: name
+          description: "<strong>Required.</strong> Show the given professor."
+          required: true
+          example: "Jon Snow"
           schema:
             type: string
-            enum: [professor, ta]
         - in: query
           name: reviews
-          description: Show reviews for the professor
-          required: false
+          description: "<em>Optional.</em> Show reviews for the professor. Default: <code>false</code>"
+          required: true
+          example: true
           schema:
             type: boolean
-        - $ref: "#/components/parameters/limit"
-        - $ref: "#/components/parameters/offset"
       responses:
         '200':
-          description: Returns professors matching query
+          description: "Returns professors matching query"
           content:
             application/json:
               schema:
@@ -84,38 +81,77 @@ paths:
                 items:
                   $ref: '#/components/schemas/Professor'
         '400':
-          description: bad input parameter
+          description: "bad input parameter"   
+  /professors:
+    get:
+      operationId: Get all professors
+      tags:
+        - Professors
+      summary: Get all professors
+      description: "Get all professors, in alphabetical order."
+      parameters:
+        - in: query
+          name: type
+          description: "<em>Optional.</em> Show only reviews for professors or teaching assistants. Default: show both. Options: <code>professor</code>, <code>ta</code>"
+          required: false
+          schema:
+            type: string
+            enum: [professor, ta]
+        - in: query
+          name: reviews
+          description: "<em>Optional.</em> Show reviews for the professors. Default: <code>false</code>"
+          required: true
+          example: true
+          schema:
+            type: boolean
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/offset"
+      responses:
+        '200':
+          description: "Returns professors matching query"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Professor'
+        '400':
+          description: "bad input parameter"
   /grades:
     get:
+      operationId: Get grades
       tags:
         - Grades
       summary: Get grades
-      description: Get grades for a course, professor, or both.
+      description: "Get grades for a course, professor, or both. This endpoint returns all of the grades available by section."
+      x-oneof: true
       parameters:
         - in: query
           name: course
-          description: Show only grades for the given course
+          description: "<em>Optional.</em> Show only grades for the given course."
           required: false
           schema:
             type: string
             example: "MATH140"
         - in: query
           name: professor
-          description: Show only grades for the given professor
-          required: false
+          description: "<em>Optional.</em> Show only grades for the given professor."
+          required: true
+          example: "Jon Snow"
           schema:
             type: string
             example: "Jon Snow"
         - in: query
           name: semester
-          description: Show only grades for the given semester. Semester should be provided as the year followed by the semester code. `01` means Spring and `08` means Fall. For example, `202001` means Spring 2020.
-          required: false
+          description: "<em>Optional.</em> Show only grades for the given semester. Semester should be provided as the year followed by the semester code. `01` means Spring and `08` means Fall. For example, `202001` means Spring 2020. Default: all semesters"
+          required: true
+          example: "202001"
           schema:
             type: string
             example: "202001"
       responses:
         '200':
-          description: Returns grades matching query
+          description: "Returns grades matching query"
           content:
             application/json:
               schema:
@@ -123,7 +159,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Grades'
         '400':
-          description: bad input parameter
+          description: "bad input parameter"
 components:
   schemas:
     Course:
@@ -263,7 +299,9 @@ components:
     limit:
       in: query
       name: limit
-      description: Maximum number of records to return. Must be between 1 and 1000. Default 100.
+      description: "<em>Optional.</em> Maximum number of records to return. Must be between 1 and 1000. Default: <code>100</code>"
+      required: true
+      example: 1
       schema:
         type: integer
         minimum: 1
@@ -272,7 +310,7 @@ components:
     offset:
       in: query
       name: offset
-      description: Number of records to skip for pagination. Default 0.
+      description: "<em>Optional.</em> Number of records to skip for pagination. Default: <code>0</code>"
       schema:
         type: integer
         minimum: 0

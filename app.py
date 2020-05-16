@@ -8,6 +8,7 @@ urls = (
 	'/', 'Index',
 	'/v1', 'VersionOne',
 	'/v1/courses', 'Courses',
+	'/v1/professor', 'Professor',
 	'/v1/professors', 'Professors',
 	'/v1/grades', 'Grades'
 )
@@ -114,11 +115,13 @@ class Index:
 class VersionOne:
 	def GET(self):
 		insert_view(web.ctx.host + web.ctx.fullpath, web.ctx.status, web.ctx.ip, web.ctx.env['HTTP_USER_AGENT'] if 'HTTP_USER_AGENT' in web.ctx.env else None, "GET")
-		return json.dumps({'version': 1})
+		web.header('Content-Type', 'application/json')
+		return json.dumps({'version': 1, 'documentation': 'https://api.planetterp.com'})
 
 class Courses:
 	def GET(self):
 		insert_view(web.ctx.host + web.ctx.fullpath, web.ctx.status, web.ctx.ip, web.ctx.env['HTTP_USER_AGENT'] if 'HTTP_USER_AGENT' in web.ctx.env else None, "GET")
+		web.header('Content-Type', 'application/json')
 		data = web.input()
 
 		LIMIT = get_limit(data)
@@ -165,11 +168,51 @@ class Courses:
 			del course['id']
 
 		return json.dumps(list(courses))
-	
+
+
+class Professor:
+	def GET(self):
+		insert_view(web.ctx.host + web.ctx.fullpath, web.ctx.status, web.ctx.ip, web.ctx.env['HTTP_USER_AGENT'] if 'HTTP_USER_AGENT' in web.ctx.env else None, "GET")
+		web.header('Content-Type', 'application/json')
+		data = web.input()
+
+		REVIEWS = False
+
+		if 'reviews' in data:
+			if not data['reviews'] in TRUE_FALSE:
+				return api_error("reviews parameter must be either true or false")
+
+			if data['reviews'] == 'true':
+				REVIEWS = True
+
+		if not 'name' in data:
+			return api_error("name parameter is required")
+
+		professor = db.query('SELECT id, name, slug, IF(type=0, "professor", "ta") AS type FROM professors WHERE verified=1 AND name = $name', vars={'name': data['name']})
+		if len(professor) == 0:
+			return api_error("professor not found")
+		professor = professor[0]
+		courses = get_courses_professor_teaches(professor['id'])
+		professor['courses'] = []
+		for course in courses:
+			professor['courses'].append(course['course'])
+
+		if REVIEWS:
+			professor['reviews'] = []
+			reviews = get_reviews(professor['id'])
+			for review in reviews:
+				print review['review']
+				professor['reviews'].append({'professor': professor['name'], 'course': review['course'], 'review': review['review'].encode('utf-8'), 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
+
+		del professor['id']
+
+		return json.dumps(professor)
+
 
 class Professors:
 	def GET(self):
 		insert_view(web.ctx.host + web.ctx.fullpath, web.ctx.status, web.ctx.ip, web.ctx.env['HTTP_USER_AGENT'] if 'HTTP_USER_AGENT' in web.ctx.env else None, "GET")
+		web.header('Content-Type', 'application/json')
 		data = web.input()
 
 		LIMIT = get_limit(data)
@@ -211,16 +254,18 @@ class Professors:
 				professor['reviews'] = []
 				reviews = get_reviews(professor['id'])
 				for review in reviews:
-					professor['reviews'].append({'professor': professor['name'], 'course': review['course'], 'review': review['review'], 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
+					print review['review']
+					professor['reviews'].append({'professor': professor['name'], 'course': review['course'], 'review': review['review'].encode('utf-8'), 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
 
 			del professor['id']
 
 		return json.dumps(list(professors))
-	
+
 
 class Grades:
 	def GET(self):
 		insert_view(web.ctx.host + web.ctx.fullpath, web.ctx.status, web.ctx.ip, web.ctx.env['HTTP_USER_AGENT'] if 'HTTP_USER_AGENT' in web.ctx.env else None, "GET")
+		web.header('Content-Type', 'application/json')
 		data = web.input()
 
 		OPTIONS = []

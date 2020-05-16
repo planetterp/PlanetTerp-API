@@ -21,6 +21,32 @@ tags:
   - name: Professors
   - name: Grades
 paths:
+  /course:
+    get:
+      operationId: Get a course
+      tags:
+        - Courses
+      summary: Get a course
+      description: "Get a course."
+      parameters:
+        - in: query
+          name: name
+          description: "<strong>Required.</strong> Show the given course."
+          required: true
+          example: MATH140
+          schema:
+            type: string
+        - in: query
+          name: reviews
+          description: "<em>Optional.</em> Show reviews for the course (reviews for professors that taught the course and listed this course as the one being reviewed). Default: <code>false</code>"
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: "Returns course matching query"
+        '400':
+          description: "bad input parameter"
   /courses:
     get:
       operationId: Get courses
@@ -73,7 +99,7 @@ paths:
             type: boolean
       responses:
         '200':
-          description: "Returns professors matching query"
+          description: "Returns professor matching query"
           content:
             application/json:
               schema:

@@ -3,39 +3,82 @@
 </aside>
 
 
+/course
+> Running the above returns something similar to the following:
+
+```json
+{
+	"department": "MATH",
+	"course_number": "140",
+	"title": "Calculus I",
+	"description": "Introduction to calculus, including functions, limits, continuity, derivatives and applications of the derivative, sketching of graphs of functions, definite and indefinite integrals, and calculation of area. The course is especially recommended for science, engineering and mathematics majors.",
+	"credits": 4,
+	"professors": ["Jon Snow", "Tyrion Lannister"]
+}
+
+
+/courses
 > Running the above returns something similar to the following:
 
 ```json
 [
-  {
-    "department": "MATH",
-    "course_number": "140",
-    "title": "Calculus I",
-    "description": "Introduction to calculus, including functions, limits, continuity, derivatives and applications of the derivative, sketching of graphs of functions, definite and indefinite integrals, and calculation of area. The course is especially recommended for science, engineering and mathematics majors.",
-    "credits": 4,
-    "professors": ["Jon Snow", "Tyrion Lannister"]
+	{
+		"department": "MATH",
+		"course_number": "140",
+		"title": "Calculus I",
+		"description": "Introduction to calculus, including functions, limits, continuity, derivatives and applications of the derivative, sketching of graphs of functions, definite and indefinite integrals, and calculation of area. The course is especially recommended for science, engineering and mathematics majors.",
+		"credits": 4,
+		"professors": ["Jon Snow", "Tyrion Lannister"]
   }
 ]
 ```
 
 
+/professor
 > Running the above returns something similar to the following:
 
 ```json
-[{
+{
 	"name": "Jon Snow",
 	"type": "professor",
 	"slug": "snow",
 	"courses": ["MATH140", "MATH141"],
-	"reviews": [{
-					"professor": "Jon Snow",
-					"course": "MATH140",
-					"review": "Jon Snow is a great professor!",
-					"rating": 5,
-					"expected_grade": "A",
-					"created": "2020-01-01T00:00:00"
-				}]
-}]
+	"reviews": [
+					{
+						"professor": "Jon Snow",
+						"course": "MATH140",
+						"review": "Jon Snow is a great professor!",
+						"rating": 5,
+						"expected_grade": "A",
+						"created": "2020-01-01T00:00:00"
+					}
+				]
+}
+```
+
+
+/professors
+> Running the above returns something similar to the following:
+
+```json
+[
+	{
+		"name": "Jon Snow",
+		"type": "professor",
+		"slug": "snow",
+		"courses": ["MATH140", "MATH141"],
+		"reviews": [
+						{
+							"professor": "Jon Snow",
+							"course": "MATH140",
+							"review": "Jon Snow is a great professor!",
+							"rating": 5,
+							"expected_grade": "A",
+							"created": "2020-01-01T00:00:00"
+						}
+					]
+	}
+]
 ```
 
 

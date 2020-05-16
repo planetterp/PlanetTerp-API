@@ -7,6 +7,7 @@ import json
 urls = (
 	'/', 'Index',
 	'/v1', 'VersionOne',
+	'/v1/course', 'Course',
 	'/v1/courses', 'Courses',
 	'/v1/professor', 'Professor',
 	'/v1/professors', 'Professors',
@@ -112,11 +113,53 @@ class Index:
 		insert_view(web.ctx.host + web.ctx.fullpath, web.ctx.status, web.ctx.ip, web.ctx.env['HTTP_USER_AGENT'] if 'HTTP_USER_AGENT' in web.ctx.env else None, "GET")
 		return render.index()
 
+
 class VersionOne:
 	def GET(self):
 		insert_view(web.ctx.host + web.ctx.fullpath, web.ctx.status, web.ctx.ip, web.ctx.env['HTTP_USER_AGENT'] if 'HTTP_USER_AGENT' in web.ctx.env else None, "GET")
 		web.header('Content-Type', 'application/json')
 		return json.dumps({'version': 1, 'documentation': 'https://api.planetterp.com'})
+
+
+class Course:
+	def GET(self):
+		insert_view(web.ctx.host + web.ctx.fullpath, web.ctx.status, web.ctx.ip, web.ctx.env['HTTP_USER_AGENT'] if 'HTTP_USER_AGENT' in web.ctx.env else None, "GET")
+		web.header('Content-Type', 'application/json')
+		data = web.input()
+
+		REVIEWS = False
+
+		if not 'name' in data:
+			return api_error("name parameter is required")
+
+		if 'reviews' in data:
+			if not data['reviews'] in TRUE_FALSE:
+				return api_error("reviews parameter must be either true or false")
+
+			if data['reviews'] == 'true':
+				REVIEWS = True
+
+		course = db.query('SELECT id, department, course_number, title, description, credits FROM courses WHERE CONCAT(department, course_number)=$name', vars={'name': data['name']})
+
+		if len(course) == 0:
+			return api_error("course not found")
+		course = course[0]
+
+		professors = get_professors_teaching_course(course['id'])
+		course['professors'] = []
+		for professor in professors:
+			course['professors'].append(professor['name'])
+
+		if REVIEWS:
+			course['reviews'] = []
+			reviews = get_reviews_course(course['id'])
+			for review in reviews:
+				course['reviews'].append({'professor': review['name'], 'course': course['department'] + course['course_number'], 'review': review['review'], 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
+
+		del course['id']
+
+		return json.dumps(course)
+
 
 class Courses:
 	def GET(self):

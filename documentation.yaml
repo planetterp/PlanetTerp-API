@@ -1,0 +1,279 @@
+openapi: 3.0.0
+servers:
+# Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/PlanetTerp3/PlanetTerp/1.0.0
+  - description: PlanetTerp API
+    url: https://api.planetterp.com/v1
+info:
+  description: PlanetTerp API
+  version: "1.0.0"
+  title: PlanetTerp API
+  contact:
+    email: admin@planetterp.com
+  # license:
+    # name: Apache 2.0
+    # url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: Courses
+  - name: Professors
+  - name: Grades
+paths:
+  /courses:
+    get:
+      operationId: Get courses
+      tags:
+        - Courses
+      summary: Get courses
+      description: Get all courses, in alphabetical order
+      parameters:
+        - in: query
+          name: department
+          description: Only get courses in a department. Must be four characters.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: reviews
+          description: Show reviews for the course (reviews for professors that taught the course and listed this course as the one being reviewed)
+          required: false
+          schema:
+            type: boolean
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/offset"
+      responses:
+        '200':
+          description: Returns courses matching query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+        '400':
+          description: bad input parameter
+  /professors:
+    get:
+      tags:
+        - Professors
+      summary: Get professors
+      description: Get all professors, in alphabetical order
+      parameters:
+        - in: query
+          name: type
+          description: Show only reviews for professors or teaching assistants
+          required: false
+          schema:
+            type: string
+            enum: [professor, ta]
+        - in: query
+          name: reviews
+          description: Show reviews for the professor
+          required: false
+          schema:
+            type: boolean
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/offset"
+      responses:
+        '200':
+          description: Returns professors matching query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Professor'
+        '400':
+          description: bad input parameter
+  /grades:
+    get:
+      tags:
+        - Grades
+      summary: Get grades
+      description: Get grades for a course, professor, or both.
+      parameters:
+        - in: query
+          name: course
+          description: Show only grades for the given course
+          required: false
+          schema:
+            type: string
+            example: "MATH140"
+        - in: query
+          name: professor
+          description: Show only grades for the given professor
+          required: false
+          schema:
+            type: string
+            example: "Jon Snow"
+        - in: query
+          name: semester
+          description: Show only grades for the given semester. Semester should be provided as the year followed by the semester code. `01` means Spring and `08` means Fall. For example, `202001` means Spring 2020.
+          required: false
+          schema:
+            type: string
+            example: "202001"
+      responses:
+        '200':
+          description: Returns grades matching query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Grades'
+        '400':
+          description: bad input parameter
+components:
+  schemas:
+    Course:
+      type: object
+      required:
+        - department
+        - course_number
+        - title
+        - description
+        - credits
+        - professors
+      properties:
+        department:
+          type: string
+          example: MATH
+        course_number:
+          type: string
+          example: 140
+        title:
+          type: string
+          example: 'Calculus I'
+        description:
+          type: string
+          example: 'Introduction to calculus, including functions, limits, continuity, derivatives and applications of the derivative, sketching of graphs of functions, definite and indefinite integrals, and calculation of area. The course is especially recommended for science, engineering and mathematics majors.'
+        credits:
+          type: integer
+          example: 3
+        professors:
+          type: array
+          items:
+            type: string
+            example: ["Jon Snow", "Tyrion Lannister"]
+    Professor:
+      required:
+        - name
+        - slug
+        - type
+        - courses
+      properties:
+        name:
+          type: string
+          example: 'Jon Snow'
+        slug:
+          type: string
+          example: 'snow'
+        type:
+          type: string
+          enum: [professor, ta]
+          example: 'professor'
+        courses:
+          type: array
+          items:
+            type: string
+            example: 'MATH140'
+      type: object
+    Grades:
+      required:
+        - course
+        - professor
+        - semester
+        - section
+        - A+
+        - A
+        - A-
+        - B+
+        - B
+        - B-
+        - C+
+        - C
+        - C-
+        - D+
+        - D
+        - D-
+        - F
+        - W
+        - Other
+      properties:
+        course:
+          type: string
+          example: 'MATH140'
+        professor:
+          type: string
+          example: 'Jon Snow'
+        semester:
+          type: string
+          example: '202001'
+        section:
+          type: string
+          example: '0101'
+        A+:
+          type: integer
+          example: 1
+        A:
+          type: integer
+          example: 1
+        A-:
+          type: integer
+          example: 1
+        B+:
+          type: integer
+          example: 1
+        B:
+          type: integer
+          example: 1
+        B-:
+          type: integer
+          example: 1
+        C+:
+          type: integer
+          example: 1
+        C:
+          type: integer
+          example: 1
+        C-:
+          type: integer
+          example: 1
+        D+:
+          type: integer
+          example: 1
+        D:
+          type: integer
+          example: 1
+        D-:
+          type: integer
+          example: 1
+        F:
+          type: integer
+          example: 1
+        W:
+          type: integer
+          example: 1
+        Other:
+          type: integer
+          example: 1
+      type: object
+  parameters:
+    limit:
+      in: query
+      name: limit
+      description: Maximum number of records to return. Must be between 1 and 1000. Default 100.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 1000
+        default: 100
+    offset:
+      in: query
+      name: offset
+      description: Number of records to skip for pagination. Default 0.
+      schema:
+        type: integer
+        minimum: 0
+        default: 0

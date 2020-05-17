@@ -1,6 +1,7 @@
 import web
 import model
 import utilities
+import json
 
 class Course:
 	def GET(self):
@@ -20,14 +21,14 @@ class Course:
 			if data['reviews'] == 'true':
 				REVIEWS = True
 
-		course = db.query('SELECT id, department, course_number, title, description, credits FROM courses WHERE CONCAT(department, course_number)=$name', vars={'name': data['name']})
+		course = model.get_course(data['name'])
 
-		if len(course) == 0:
+		if not course:
 			return utilities.api_error("course not found")
-		course = course[0]
 
 		professors = model.get_professors_teaching_course(course['id'])
 		course['professors'] = []
+
 		for professor in professors:
 			course['professors'].append(professor['name'])
 

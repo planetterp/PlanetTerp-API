@@ -25,8 +25,6 @@ web.config.debug = True
 app = web.application(urls, globals())
 render = web.template.render('templates', globals={'str': str})
 
-TRUE_FALSE = ['true', 'false']
-
 class Index:
 	def GET(self):
 		model.insert_view(web.ctx.host + web.ctx.fullpath, web.ctx.status, web.ctx.ip, web.ctx.env['HTTP_USER_AGENT'] if 'HTTP_USER_AGENT' in web.ctx.env else None, "GET")

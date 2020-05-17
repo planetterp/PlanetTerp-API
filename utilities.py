@@ -1,6 +1,8 @@
 import web
 import json
 
+TRUE_FALSE = ['true', 'false']
+
 # modified from https://stackoverflow.com/q/354038
 def is_int(s):
 	try:

@@ -1,6 +1,7 @@
 import web
 import model
 import utilities
+import json
 
 class Professors:
 	def GET(self):
@@ -26,30 +27,23 @@ class Professors:
 			TYPE = data['type']
 
 		if 'reviews' in data:
-			if not data['reviews'] in TRUE_FALSE:
+			if not data['reviews'] in utilities.TRUE_FALSE:
 				return utilities.api_error("reviews parameter must be either true or false")
 
 			if data['reviews'] == 'true':
 				REVIEWS = True
 
-		if TYPE == "":
-			professors = db.query('SELECT id, name, slug, IF(type=0, "professor", "ta") AS type FROM professors WHERE verified=1 ORDER BY name LIMIT {} OFFSET {}'.format(LIMIT, OFFSET))
-		else:
-			professors = db.query('SELECT id, name, slug, IF(type=0, "professor", "ta") AS type FROM professors WHERE verified=1 AND type=$type ORDER BY name LIMIT {} OFFSET {}'.format(LIMIT, OFFSET), vars={'type': 0 if TYPE == 'professor' else 1})
-		professors = list(professors)
-		for professor in professors:
-			courses = model.get_courses_professor_teaches(professor['id'])
-			professor['courses'] = []
-			for course in courses:
-				professor['courses'].append(course['course'])
+		professors = list(model.get_professors(LIMIT, OFFSET, TYPE, REVIEWS))
+		# for professor in professors:
+		# 	professor['courses'] = model.get_professor_courses(professor['id'])
 
-			if REVIEWS:
-				professor['reviews'] = []
-				reviews = model.get_reviews(professor['id'])
-				for review in reviews:
-					print review['review']
-					professor['reviews'].append({'professor': professor['name'], 'course': review['course'], 'review': review['review'].encode('utf-8'), 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
+		# 	if REVIEWS:
+		# 		professor['reviews'] = []
+		# 		reviews = model.get_reviews(professor['id'])
+		# 		for review in reviews:
+		# 			print review['review']
+		# 			professor['reviews'].append({'professor': professor['name'], 'course': review['course'], 'review': review['review'].encode('utf-8'), 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
 
-			del professor['id']
+		# 	del professor['id']
 
 		return json.dumps(list(professors))

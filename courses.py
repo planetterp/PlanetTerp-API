@@ -1,6 +1,7 @@
 import web
 import model
 import utilities
+import json
 
 class Courses:
 	def GET(self):
@@ -8,7 +9,7 @@ class Courses:
 		web.header('Content-Type', 'application/json')
 		data = web.input()
 
-		LIMIT = utiltiies.get_limit(data)
+		LIMIT = utilities.get_limit(data)
 		OFFSET = utilities.get_offset(data)
 		DEPARTMENT = ""
 		REVIEWS = False
@@ -31,12 +32,8 @@ class Courses:
 			if data['reviews'] == 'true':
 				REVIEWS = True
 
-		if DEPARTMENT == "":
-			courses = db.query('SELECT id, department, course_number, title, description, credits FROM courses ORDER BY CONCAT(department, course_number) LIMIT {} OFFSET {}'.format(LIMIT, OFFSET), vars={'department': DEPARTMENT})
-		else:
-			courses = db.query('SELECT id, department, course_number, title, description, credits FROM courses WHERE department=$department ORDER BY CONCAT(department, course_number) LIMIT {} OFFSET {}'.format(LIMIT, OFFSET), vars={'department': DEPARTMENT})
+		courses = list(model.get_courses(LIMIT, OFFSET, DEPARTMENT))
 
-		courses = list(courses)
 		for course in courses:
 			professors = model.get_professors_teaching_course(course['id'])
 			course['professors'] = []

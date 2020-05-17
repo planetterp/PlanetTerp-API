@@ -15,29 +15,16 @@ class Course:
 			return utilities.api_error("name parameter is required")
 
 		if 'reviews' in data:
-			if not data['reviews'] in TRUE_FALSE:
+			if not data['reviews'] in utilities.TRUE_FALSE:
 				return utilities.api_error("reviews parameter must be either true or false")
 
 			if data['reviews'] == 'true':
 				REVIEWS = True
 
-		course = model.get_course(data['name'])
+		course = model.get_course(data['name'], REVIEWS)
 
 		if not course:
 			return utilities.api_error("course not found")
 
-		professors = model.get_professors_teaching_course(course['id'])
-		course['professors'] = []
-
-		for professor in professors:
-			course['professors'].append(professor['name'])
-
-		if REVIEWS:
-			course['reviews'] = []
-			reviews = model.get_reviews_course(course['id'])
-			for review in reviews:
-				course['reviews'].append({'professor': review['name'], 'course': course['department'] + course['course_number'], 'review': review['review'], 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
-
-		del course['id']
-
 		return json.dumps(course)
+

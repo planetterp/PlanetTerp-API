@@ -38,6 +38,14 @@ class Grades:
 
 			OPTIONS.append("semester = {}".format(data['semester']))
 
+		if 'section' in data:
+			all_sections = model.get_sections()
+
+			if not any(section['section'] == data['section'] for section in all_sections):
+				return utilities.api_error("invalid section; example of a valid section: 0101")
+
+			OPTIONS.append("section = '{}'".format(data['section']))
+
 		OPTIONS = ' AND '.join(OPTIONS)
 		if OPTIONS:
 			OPTIONS = ' WHERE ' + OPTIONS

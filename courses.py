@@ -25,27 +25,17 @@ class Courses:
 
 			DEPARTMENT = data['department']
 
+			if not model.department_has_course(DEPARTMENT):
+				return utilities.api_error("no courses found with that department")
+
 		if 'reviews' in data:
-			if not data['reviews'] in TRUE_FALSE:
+			if not data['reviews'] in utilities.TRUE_FALSE:
 				return utilities.api_error("reviews parameter must be either true or false")
 
 			if data['reviews'] == 'true':
 				REVIEWS = True
 
-		courses = list(model.get_courses(LIMIT, OFFSET, DEPARTMENT))
-
-		for course in courses:
-			professors = model.get_professors_teaching_course(course['id'])
-			course['professors'] = []
-			for professor in professors:
-				course['professors'].append(professor['name'])
-
-			if REVIEWS:
-				course['reviews'] = []
-				reviews = model.get_reviews_course(course['id'])
-				for review in reviews:
-					course['reviews'].append({'professor': review['name'], 'course': course['department'] + course['course_number'], 'review': review['review'], 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
-
-			del course['id']
+		courses = model.get_courses(LIMIT, OFFSET, DEPARTMENT, REVIEWS)
 
 		return json.dumps(list(courses))
+

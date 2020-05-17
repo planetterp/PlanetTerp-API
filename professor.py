@@ -21,19 +21,10 @@ class Professor:
 		if not 'name' in data:
 			return utilities.api_error("name parameter is required")
 
-		professor = model.get_professor(data['name'])
+		professor = model.get_professor(data['name'], REVIEWS)
 		
 		if not professor:
 			return utilities.api_error("professor not found")
 
-		professor['courses'] = model.get_professor_courses(professor['id'])
-
-		if REVIEWS:
-			professor['reviews'] = []
-			reviews = model.get_reviews(professor['id'])
-			for review in reviews:
-				professor['reviews'].append({'professor': professor['name'], 'course': review['course'], 'review': review['review'].encode('utf-8'), 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
-
-		del professor['id']
-
 		return json.dumps(professor)
+

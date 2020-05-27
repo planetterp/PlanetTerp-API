@@ -28,8 +28,22 @@ def get_course(name, reviews):
 	if len(course) != 1:
 		return None
 
-	course = course[0]
+	course = get_course_data(course[0], reviews)
 
+	return course
+
+def get_courses(limit, offset, department, reviews):
+	if department:
+		courses = list(db.query('SELECT courses.id, department, course_number, title, description, credits, GROUP_CONCAT(name) AS professors FROM courses LEFT JOIN professor_courses ON professor_courses.course_id = courses.id LEFT JOIN professors ON professors.id = professor_courses.professor_id WHERE department = $department GROUP BY courses.id ORDER BY CONCAT(department, course_number) LIMIT {} OFFSET {}'.format(limit, offset), vars={'department': department}))
+	else:
+		courses = list(db.query('SELECT courses.id, department, course_number, title, description, credits, GROUP_CONCAT(name) AS professors FROM courses LEFT JOIN professor_courses ON professor_courses.course_id = courses.id LEFT JOIN professors ON professors.id = professor_courses.professor_id GROUP BY courses.id ORDER BY CONCAT(department, course_number) LIMIT {} OFFSET {}'.format(limit, offset), vars={'department': department}))
+
+	for course in courses:
+		course = get_course_data(course, reviews)
+
+	return courses
+
+def get_course_data(course, reviews):
 	if course['professors']:
 		course['professors'] = course['professors'].split(',')
 	else:
@@ -42,30 +56,7 @@ def get_course(name, reviews):
 			course['reviews'].append({'professor': review['name'], 'course': course['department'] + course['course_number'], 'review': review['review'], 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
 
 	del course['id']
-
 	return course
-
-def get_courses(limit, offset, department, reviews):
-	if department:
-		courses = list(db.query('SELECT courses.id, department, course_number, title, description, credits, GROUP_CONCAT(name) AS professors FROM courses LEFT JOIN professor_courses ON professor_courses.course_id = courses.id LEFT JOIN professors ON professors.id = professor_courses.professor_id WHERE department = $department GROUP BY courses.id ORDER BY CONCAT(department, course_number) LIMIT {} OFFSET {}'.format(limit, offset), vars={'department': department}))
-	else:
-		courses = list(db.query('SELECT courses.id, department, course_number, title, description, credits, GROUP_CONCAT(name) AS professors FROM courses LEFT JOIN professor_courses ON professor_courses.course_id = courses.id LEFT JOIN professors ON professors.id = professor_courses.professor_id GROUP BY courses.id ORDER BY CONCAT(department, course_number) LIMIT {} OFFSET {}'.format(limit, offset), vars={'department': department}))
-
-	for course in courses:
-		if course['professors']:
-			course['professors'] = course['professors'].split(',')
-		else:
-			course['professors'] = []
-
-		if reviews:
-			course['reviews'] = []
-			course_reviews = get_reviews_course(course['id'])
-			for review in course_reviews:
-				course['reviews'].append({'professor': review['name'], 'course': course['department'] + course['course_number'], 'review': review['review'], 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
-
-		del course['id']
-
-	return courses
 
 # todo: find a better way to get professor and reviews
 def get_professor(name, reviews):
@@ -74,18 +65,8 @@ def get_professor(name, reviews):
 	if len(professor) != 1:
 		return None
 
-	professor = professor[0]
-
-	if professor['courses']:
-		professor['courses'] = professor['courses'].split(',')
-
-	if reviews:
-		professor['reviews'] = []
-		professor_reviews = get_reviews(professor['id'])
-		for review in professor_reviews:
-			professor['reviews'].append({'professor': professor['name'], 'course': review['course'], 'review': review['review'].encode('utf-8'), 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
-
-	del professor['id']
+	professor = get_professor_data(professor[0], reviews)
+	
 	return professor
 
 # todo: find a better way to get professors and reviews
@@ -96,19 +77,29 @@ def get_professors(limit, offset, type_, reviews):
 		professors = list(db.query('SELECT professors.id AS id, name, slug, IF(type = 0, "professor", "ta") AS type, GROUP_CONCAT(CONCAT(department, course_number)) AS courses FROM professors LEFT JOIN professor_courses ON professor_courses.professor_id = professors.id LEFT JOIN courses ON courses.id = professor_courses.course_id WHERE professors.verified = TRUE GROUP BY professors.id ORDER BY name LIMIT {} OFFSET {}'.format(limit, offset)))
 
 	for professor in professors:
-		if professor['courses']:
-			professor['courses'] = professor['courses'].split(',')
-		else:
-			professor['courses'] = []
+		professor = get_professor_data(professor, reviews)
 
-		if reviews:
-			professor['reviews'] = []
-			professor_reviews = get_reviews(professor['id'])
-			for review in professor_reviews:
-				professor['reviews'].append({'professor': professor['name'], 'course': review['course'], 'review': review['review'].encode('utf-8'), 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
-
-		del professor['id']
 	return professors
+
+def get_professor_data(professor, reviews):
+	if professor['courses']:
+		professor['courses'] = professor['courses'].split(',')
+
+	if reviews:
+		professor['reviews'] = []
+		professor_reviews = get_reviews(professor['id'])
+		for review in professor_reviews:
+			professor['reviews'].append({'professor': professor['name'], 'course': review['course'], 'review': review['review'].encode('utf-8'), 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
+
+	average_rating = get_average_rating(professor['id'])
+
+	if average_rating is not None:
+		average_rating = float(average_rating)
+
+	professor['average_rating'] = average_rating
+
+	del professor['id']
+	return professor
 
 def get_professor_id(name):
 	a = db.query('SELECT * FROM professors WHERE name=$name', vars={'name': name})
@@ -151,6 +142,14 @@ def get_grades(options):
 
 def get_sections():
 	return db.query('SELECT section FROM grades')
+
+def get_average_rating(professor_id):
+	rating = db.query('SELECT SUM(rating)/COUNT(rating) AS average_rating, COUNT(id) as num_reviews FROM reviews WHERE professor_id = $id AND verified = true', vars={'id': professor_id})
+
+	if len(rating) != 1:
+		return None
+
+	return rating[0]['average_rating']
 
 def insert_view (page, status, ip, user_agent, method):
 	db.insert('views', page = page, status = status, ip = ip, user_agent = user_agent, method = method)

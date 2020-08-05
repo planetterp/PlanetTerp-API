@@ -20,7 +20,7 @@ urls = (
 	'/v1/grades', grades.Grades
 )
 
-web.config.debug = True
+web.config.debug = False
 app = web.application(urls, globals())
 render = web.template.render('templates', globals={'str': str})
 

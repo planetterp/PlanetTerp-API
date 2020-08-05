@@ -4,7 +4,6 @@
 import web
 import json
 import model
-import utilities
 import course
 import courses
 import professor

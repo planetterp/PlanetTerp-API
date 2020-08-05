@@ -41,6 +41,7 @@ class Grades:
 		if 'section' in data:
 			all_sections = model.get_sections()
 
+			# todo: more efficient way of doing this?
 			if not any(section['section'] == data['section'] for section in all_sections):
 				return utilities.api_error("invalid section; example of a valid section: 0101")
 

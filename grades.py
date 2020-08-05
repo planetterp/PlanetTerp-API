@@ -9,7 +9,7 @@ class Grades:
 		web.header('Content-Type', 'application/json')
 		data = web.input()
 
-		OPTIONS = []
+		options = []
 
 		if not 'professor' in data and not 'course' in data:
 			return utilities.api_error("parameters must include at least one of: \"course\", \"professor\"")
@@ -20,7 +20,7 @@ class Grades:
 			if not professor_id:
 				return utilities.api_error("professor not found")
 
-			OPTIONS.append("professor_id = {}".format(professor_id))
+			options.append("professor_id = {}".format(professor_id))
 
 		if 'course' in data:
 			course_id = model.get_course_id(data['course'])
@@ -28,7 +28,7 @@ class Grades:
 			if not course_id:
 				return utilities.api_error("course not found")
 
-			OPTIONS.append("course_id = {}".format(course_id))
+			options.append("course_id = {}".format(course_id))
 
 		if 'semester' in data:
 			possible_semesters = ["201201", "201208", "201301", "201308", "201401", "201408", "201501", "201508", "201601", "201608", "201701", "201708", "201801", "201808", "201901", "201908"]
@@ -36,7 +36,7 @@ class Grades:
 			if not data['semester'] in possible_semesters:
 				return utilities.api_error("invalid semester parameter; semester parameter must be one of the following: " + ', '.join(possible_semesters))
 
-			OPTIONS.append("semester = {}".format(data['semester']))
+			options.append("semester = '{}'".format(data['semester']))
 
 		if 'section' in data:
 			all_sections = model.get_sections()
@@ -45,13 +45,13 @@ class Grades:
 			if not any(section['section'] == data['section'] for section in all_sections):
 				return utilities.api_error("invalid section; example of a valid section: 0101")
 
-			OPTIONS.append("section = '{}'".format(data['section']))
+			options.append("section = '{}'".format(data['section']))
 
-		OPTIONS = ' AND '.join(OPTIONS)
-		if OPTIONS:
-			OPTIONS = ' WHERE ' + OPTIONS
+		options = ' AND '.join(options)
+		if options:
+			options = ' WHERE ' + options
 
-		grades = model.get_grades(OPTIONS)
+		grades = model.get_grades(options)
 		grades_data = []
 
 		for course_grade in grades:

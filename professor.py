@@ -9,19 +9,19 @@ class Professor:
 		web.header('Content-Type', 'application/json')
 		data = web.input()
 
-		REVIEWS = False
+		reviews = False
+
+		if not 'name' in data:
+			return utilities.api_error("name parameter is required")
 
 		if 'reviews' in data:
 			if not data['reviews'] in utilities.TRUE_FALSE:
 				return utilities.api_error("reviews parameter must be either true or false")
 
 			if data['reviews'] == 'true':
-				REVIEWS = True
+				reviews = True
 
-		if not 'name' in data:
-			return utilities.api_error("name parameter is required")
-
-		professor = model.get_professor(data['name'], REVIEWS)
+		professor = model.get_professor(data['name'], reviews)
 		
 		if not professor:
 			return utilities.api_error("professor not found")

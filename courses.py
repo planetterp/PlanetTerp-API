@@ -9,23 +9,23 @@ class Courses:
 		web.header('Content-Type', 'application/json')
 		data = web.input()
 
-		LIMIT = utilities.get_limit(data)
-		OFFSET = utilities.get_offset(data)
-		DEPARTMENT = ""
-		REVIEWS = False
+		limit = utilities.get_limit(data)
+		offset = utilities.get_offset(data)
+		department = ""
+		reviews = False
 
-		if not utilities.is_int(LIMIT):
-			return LIMIT
-		if not utilities.is_int(OFFSET):
-			return OFFSET
+		if not utilities.is_int(limit):
+			return limit
+		if not utilities.is_int(offset):
+			return offset
 
 		if 'department' in data:
 			if len(data['department']) != 4:
 				return utilities.api_error("department parameter must be 4 characters")
 
-			DEPARTMENT = data['department']
+			department = data['department']
 
-			if not model.department_has_course(DEPARTMENT):
+			if not model.department_has_course(department):
 				return utilities.api_error("no courses found with that department")
 
 		if 'reviews' in data:
@@ -33,9 +33,9 @@ class Courses:
 				return utilities.api_error("reviews parameter must be either true or false")
 
 			if data['reviews'] == 'true':
-				REVIEWS = True
+				reviews = True
 
-		courses = model.get_courses(LIMIT, OFFSET, DEPARTMENT, REVIEWS)
+		courses = model.get_courses(limit, offset, department, reviews)
 
 		return json.dumps(list(courses))
 

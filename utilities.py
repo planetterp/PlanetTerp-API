@@ -16,25 +16,25 @@ def api_error(message):
 	return json.dumps({'error': message})
 
 def get_limit(data):
-	LIMIT = 100
+	limit = 100
 
 	if 'limit' in data:
-		LIMIT = data['limit']
-		if not is_int(LIMIT):
+		limit = data['limit']
+		if not is_int(limit):
 			return api_error("limit parameter must be an integer between 1 and 1000")
-		LIMIT = int(LIMIT)
-		if LIMIT < 1 or LIMIT > 1000:
+		limit = int(limit)
+		if limit < 1 or limit > 1000:
 			return api_error("limit parameter must be an integer between 1 and 1000")
-	return LIMIT
+	return limit
 
 def get_offset(data):
-	OFFSET = 0
+	offset = 0
 
 	if 'offset' in data:
-		OFFSET = data['offset']
-		if not is_int(OFFSET):
+		offset = data['offset']
+		if not is_int(offset):
 			return api_error("offset parameter must be an integer greater than or equal to 0")
-		OFFSET = int(OFFSET)
-		if OFFSET < 0:
+		offset = int(offset)
+		if offset < 0:
 			return api_error("offset parameter must be an integer greater than or equal to 0")
-	return OFFSET
+	return offset

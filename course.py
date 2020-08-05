@@ -9,7 +9,7 @@ class Course:
 		web.header('Content-Type', 'application/json')
 		data = web.input()
 
-		REVIEWS = False
+		reviews = False
 
 		if not 'name' in data:
 			return utilities.api_error("name parameter is required")
@@ -19,9 +19,9 @@ class Course:
 				return utilities.api_error("reviews parameter must be either true or false")
 
 			if data['reviews'] == 'true':
-				REVIEWS = True
+				reviews = True
 
-		course = model.get_course(data['name'], REVIEWS)
+		course = model.get_course(data['name'], reviews)
 
 		if not course:
 			return utilities.api_error("course not found")

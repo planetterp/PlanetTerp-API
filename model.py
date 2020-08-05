@@ -1,149 +1,236 @@
 import web
 
-db = web.database(dbn='mysql', db='planetterp', user='root', pw='', charset='utf8mb4')
+db = web.database(dbn='mysql', db='planetterp',
+                  user='root', pw='', charset='utf8mb4')
+
 
 def get_professors_teaching_course(course_id):
-	return db.query('SELECT name FROM professor_courses INNER JOIN professors ON professor_courses.professor_id = professors.id WHERE professor_courses.course_id = $id AND professors.verified = TRUE', vars={'id': course_id}).list()
+    return db.query(
+        'SELECT name FROM professor_courses INNER JOIN professors ON professor_courses.professor_id = professors.id WHERE professor_courses.course_id = $id AND professors.verified = TRUE',
+        vars={
+            'id': course_id}).list()
+
 
 def get_courses_professor_teaches(professor_id):
-	return db.query('SELECT CONCAT(department, course_number) AS course FROM professor_courses INNER JOIN courses ON professor_courses.course_id = courses.id WHERE professor_id = $id ORDER BY CONCAT(department, course_number) ASC', vars={'id': professor_id}).list()
+    return db.query(
+        'SELECT CONCAT(department, course_number) AS course FROM professor_courses INNER JOIN courses ON professor_courses.course_id = courses.id WHERE professor_id = $id ORDER BY CONCAT(department, course_number) ASC',
+        vars={
+            'id': professor_id}).list()
+
 
 def get_reviews(professor_id):
-	return db.query('SELECT *, CONCAT(department, course_number) AS course, reviews.created AS review_created FROM reviews LEFT JOIN courses on reviews.course_id = courses.id WHERE professor_id = $id AND verified = TRUE', vars={'id': professor_id})
+    return db.query(
+        'SELECT *, CONCAT(department, course_number) AS course, reviews.created AS review_created FROM reviews LEFT JOIN courses on reviews.course_id = courses.id WHERE professor_id = $id AND verified = TRUE',
+        vars={
+            'id': professor_id})
+
 
 def get_reviews_course(course_id):
-	return db.query('SELECT *, reviews.created AS review_created FROM reviews LEFT JOIN professors ON reviews.professor_id = professors.id WHERE course_id = $course_id AND reviews.verified = TRUE AND professors.verified = TRUE', vars={'course_id': course_id})
+    return db.query(
+        'SELECT *, reviews.created AS review_created FROM reviews LEFT JOIN professors ON reviews.professor_id = professors.id WHERE course_id = $course_id AND reviews.verified = TRUE AND professors.verified = TRUE',
+        vars={
+            'course_id': course_id})
+
 
 def department_has_course(department):
-	department = db.query('SELECT * FROM courses WHERE department = $department', vars={'department': department})
+    department = db.query(
+        'SELECT * FROM courses WHERE department = $department',
+        vars={
+            'department': department})
 
-	if len(department) == 0:
-		return False
+    if len(department) == 0:
+        return False
 
-	return True
+    return True
+
 
 def get_course(name, reviews):
-	course = list(db.query('SELECT courses.id, department, course_number, title, description, credits, GROUP_CONCAT(name) AS professors FROM courses LEFT JOIN professor_courses ON professor_courses.course_id = courses.id LEFT JOIN professors ON professors.id = professor_courses.professor_id WHERE CONCAT(department, course_number) = $name GROUP BY courses.id', vars={'name': name}))
+    course = list(
+        db.query(
+            'SELECT courses.id, department, course_number, title, description, credits, GROUP_CONCAT(name) AS professors FROM courses LEFT JOIN professor_courses ON professor_courses.course_id = courses.id LEFT JOIN professors ON professors.id = professor_courses.professor_id WHERE CONCAT(department, course_number) = $name GROUP BY courses.id',
+            vars={
+                'name': name}))
 
-	if len(course) != 1:
-		return None
+    if len(course) != 1:
+        return None
 
-	course = get_course_data(course[0], reviews)
+    course = get_course_data(course[0], reviews)
 
-	return course
+    return course
+
 
 def get_courses(limit, offset, department, reviews):
-	if department:
-		courses = list(db.query('SELECT courses.id, department, course_number, title, description, credits, GROUP_CONCAT(name) AS professors FROM courses LEFT JOIN professor_courses ON professor_courses.course_id = courses.id LEFT JOIN professors ON professors.id = professor_courses.professor_id WHERE department = $department GROUP BY courses.id ORDER BY CONCAT(department, course_number) LIMIT {} OFFSET {}'.format(limit, offset), vars={'department': department}))
-	else:
-		courses = list(db.query('SELECT courses.id, department, course_number, title, description, credits, GROUP_CONCAT(name) AS professors FROM courses LEFT JOIN professor_courses ON professor_courses.course_id = courses.id LEFT JOIN professors ON professors.id = professor_courses.professor_id GROUP BY courses.id ORDER BY CONCAT(department, course_number) LIMIT {} OFFSET {}'.format(limit, offset), vars={'department': department}))
+    if department:
+        courses = list(
+            db.query(
+                'SELECT courses.id, department, course_number, title, description, credits, GROUP_CONCAT(name) AS professors FROM courses LEFT JOIN professor_courses ON professor_courses.course_id = courses.id LEFT JOIN professors ON professors.id = professor_courses.professor_id WHERE department = $department GROUP BY courses.id ORDER BY CONCAT(department, course_number) LIMIT {} OFFSET {}'.format(
+                    limit,
+                    offset),
+                vars={
+                    'department': department}))
+    else:
+        courses = list(
+            db.query(
+                'SELECT courses.id, department, course_number, title, description, credits, GROUP_CONCAT(name) AS professors FROM courses LEFT JOIN professor_courses ON professor_courses.course_id = courses.id LEFT JOIN professors ON professors.id = professor_courses.professor_id GROUP BY courses.id ORDER BY CONCAT(department, course_number) LIMIT {} OFFSET {}'.format(
+                    limit,
+                    offset),
+                vars={
+                    'department': department}))
 
-	for course in courses:
-		course = get_course_data(course, reviews)
+    for course in courses:
+        course = get_course_data(course, reviews)
 
-	return courses
+    return courses
+
 
 def get_course_data(course, reviews):
-	if course['professors']:
-		course['professors'] = course['professors'].split(',')
-	else:
-		course['professors'] = []
+    if course['professors']:
+        course['professors'] = course['professors'].split(',')
+    else:
+        course['professors'] = []
 
-	if reviews:
-		course['reviews'] = []
-		course_reviews = get_reviews_course(course['id'])
-		for review in course_reviews:
-			course['reviews'].append({'professor': review['name'], 'course': course['department'] + course['course_number'], 'review': review['review'], 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
+    if reviews:
+        course['reviews'] = []
+        course_reviews = get_reviews_course(course['id'])
+        for review in course_reviews:
+            course['reviews'].append({'professor': review['name'],
+                                      'course': course['department'] + course['course_number'],
+                                      'review': review['review'],
+                                      'rating': review['rating'],
+                                      'expected_grade': review['expected_grade'],
+                                      'created': review['review_created'].isoformat()})
 
-	del course['id']
-	return course
+    del course['id']
+    return course
 
 # todo: find a better way to get professor and reviews
-def get_professor(name, reviews):
-	professor = list(db.query('SELECT professors.id AS id, name, slug, IF(type = 0, "professor", "ta") AS type, GROUP_CONCAT(CONCAT(department, course_number)) AS courses FROM professors LEFT JOIN professor_courses ON professor_courses.professor_id = professors.id LEFT JOIN courses ON courses.id = professor_courses.course_id WHERE professors.verified = TRUE AND name = $name GROUP BY professors.id', vars={'name': name}))
-	
-	if len(professor) != 1:
-		return None
 
-	professor = get_professor_data(professor[0], reviews)
-	
-	return professor
+
+def get_professor(name, reviews):
+    professor = list(
+        db.query(
+            'SELECT professors.id AS id, name, slug, IF(type = 0, "professor", "ta") AS type, GROUP_CONCAT(CONCAT(department, course_number)) AS courses FROM professors LEFT JOIN professor_courses ON professor_courses.professor_id = professors.id LEFT JOIN courses ON courses.id = professor_courses.course_id WHERE professors.verified = TRUE AND name = $name GROUP BY professors.id',
+            vars={
+                'name': name}))
+
+    if len(professor) != 1:
+        return None
+
+    professor = get_professor_data(professor[0], reviews)
+
+    return professor
 
 # todo: find a better way to get professors and reviews
+
+
 def get_professors(limit, offset, type_, reviews):
-	if type_:
-		professors = list(db.query('SELECT professors.id AS id, name, slug, IF(type = 0, "professor", "ta") AS type, GROUP_CONCAT(CONCAT(department, course_number)) AS courses FROM professors LEFT JOIN professor_courses ON professor_courses.professor_id = professors.id LEFT JOIN courses ON courses.id = professor_courses.course_id WHERE professors.verified = TRUE AND type = $type GROUP BY professors.id ORDER BY name LIMIT {} OFFSET {}'.format(limit, offset), vars={'type': 0 if type_ == 'professor' else 1}))
-	else:
-		professors = list(db.query('SELECT professors.id AS id, name, slug, IF(type = 0, "professor", "ta") AS type, GROUP_CONCAT(CONCAT(department, course_number)) AS courses FROM professors LEFT JOIN professor_courses ON professor_courses.professor_id = professors.id LEFT JOIN courses ON courses.id = professor_courses.course_id WHERE professors.verified = TRUE GROUP BY professors.id ORDER BY name LIMIT {} OFFSET {}'.format(limit, offset)))
+    if type_:
+        professors = list(
+            db.query(
+                'SELECT professors.id AS id, name, slug, IF(type = 0, "professor", "ta") AS type, GROUP_CONCAT(CONCAT(department, course_number)) AS courses FROM professors LEFT JOIN professor_courses ON professor_courses.professor_id = professors.id LEFT JOIN courses ON courses.id = professor_courses.course_id WHERE professors.verified = TRUE AND type = $type GROUP BY professors.id ORDER BY name LIMIT {} OFFSET {}'.format(
+                    limit,
+                    offset),
+                vars={
+                    'type': 0 if type_ == 'professor' else 1}))
+    else:
+        professors = list(db.query('SELECT professors.id AS id, name, slug, IF(type = 0, "professor", "ta") AS type, GROUP_CONCAT(CONCAT(department, course_number)) AS courses FROM professors LEFT JOIN professor_courses ON professor_courses.professor_id = professors.id LEFT JOIN courses ON courses.id = professor_courses.course_id WHERE professors.verified = TRUE GROUP BY professors.id ORDER BY name LIMIT {} OFFSET {}'.format(limit, offset)))
 
-	for professor in professors:
-		professor = get_professor_data(professor, reviews)
+    for professor in professors:
+        professor = get_professor_data(professor, reviews)
 
-	return professors
+    return professors
+
 
 def get_professor_data(professor, reviews):
-	if professor['courses']:
-		professor['courses'] = professor['courses'].split(',')
+    if professor['courses']:
+        professor['courses'] = professor['courses'].split(',')
 
-	if reviews:
-		professor['reviews'] = []
-		professor_reviews = get_reviews(professor['id'])
-		for review in professor_reviews:
-			professor['reviews'].append({'professor': professor['name'], 'course': review['course'], 'review': review['review'].encode('utf-8'), 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
+    if reviews:
+        professor['reviews'] = []
+        professor_reviews = get_reviews(professor['id'])
+        for review in professor_reviews:
+            professor['reviews'].append(
+                {
+                    'professor': professor['name'],
+                    'course': review['course'],
+                    'review': review['review'].encode('utf-8'),
+                    'rating': review['rating'],
+                    'expected_grade': review['expected_grade'],
+                    'created': review['review_created'].isoformat()})
 
-	# average_rating = get_average_rating(professor['id'])
+    # average_rating = get_average_rating(professor['id'])
 
-	# if average_rating is not None:
-	# 	average_rating = float(average_rating)
+    # if average_rating is not None:
+    # 	average_rating = float(average_rating)
 
-	# professor['average_rating'] = average_rating
+    # professor['average_rating'] = average_rating
 
-	del professor['id']
-	return professor
+    del professor['id']
+    return professor
+
 
 def get_professor_id(name):
-	a = db.query('SELECT * FROM professors WHERE name = $name AND verified = TRUE', vars={'name': name})
+    a = db.query(
+        'SELECT * FROM professors WHERE name = $name AND verified = TRUE',
+        vars={
+            'name': name})
 
-	if len(a) == 0:
-		return None
+    if len(a) == 0:
+        return None
 
-	return a[0]['id']
+    return a[0]['id']
+
 
 def get_professor_courses(professor_id):
-	courses = get_courses_professor_teaches(professor_id)
-	return [course['course'] for course in courses]
+    courses = get_courses_professor_teaches(professor_id)
+    return [course['course'] for course in courses]
+
 
 def get_course_id(course_name):
-	department = course_name[:4]
-	course_number = course_name[4:]
+    department = course_name[:4]
+    course_number = course_name[4:]
 
-	course = db.select('courses', where='department = $department AND course_number = $course_number', vars={'department': department, 'course_number': course_number})
+    course = db.select(
+        'courses',
+        where='department = $department AND course_number = $course_number',
+        vars={
+            'department': department,
+            'course_number': course_number})
 
-	if len(course) == 1:
-		return course[0]['id']
+    if len(course) == 1:
+        return course[0]['id']
 
-	return None
+    return None
+
 
 def get_course_from_id(id_):
-	try:
-		return db.select('courses', where = 'id = $id', vars={'id': id_})[0]
-	except IndexError:
-		return None
+    try:
+        return db.select('courses', where='id = $id', vars={'id': id_})[0]
+    except IndexError:
+        return None
+
 
 def get_grades(options):
-	grades_data = db.query('SELECT department, course_number, name, semester, section, APLUS, A, AMINUS, BPLUS, B, BMINUS, CPLUS, C, CMINUS, DPLUS, D, DMINUS, F, W, OTHER FROM grades LEFT JOIN courses ON courses.id = grades.course_id LEFT JOIN professors ON professors.id = grades.professor_id {} ORDER BY semester DESC'.format(options))
-	return grades_data
+    grades_data = db.query('SELECT department, course_number, name, semester, section, APLUS, A, AMINUS, BPLUS, B, BMINUS, CPLUS, C, CMINUS, DPLUS, D, DMINUS, F, W, OTHER FROM grades LEFT JOIN courses ON courses.id = grades.course_id LEFT JOIN professors ON professors.id = grades.professor_id {} ORDER BY semester DESC'.format(options))
+    return grades_data
+
 
 def get_sections():
-	return db.query('SELECT section FROM grades')
+    return db.query('SELECT section FROM grades')
+
 
 def get_average_rating(professor_id):
-	rating = db.query('SELECT SUM(rating)/COUNT(rating) AS average_rating, COUNT(id) as num_reviews FROM reviews WHERE professor_id = $id AND verified = TRUE', vars={'id': professor_id})
+    rating = db.query(
+        'SELECT SUM(rating)/COUNT(rating) AS average_rating, COUNT(id) as num_reviews FROM reviews WHERE professor_id = $id AND verified = TRUE',
+        vars={
+            'id': professor_id})
 
-	if len(rating) != 1:
-		return None
+    if len(rating) != 1:
+        return None
 
-	return rating[0]['average_rating']
+    return rating[0]['average_rating']
 
-def insert_view (page, status, ip, user_agent, method):
-	db.insert('views', page = page, status = status, ip = ip, user_agent = user_agent, method = method)
+
+def insert_view(page, status, ip, user_agent, method):
+    db.insert('views', page=page, status=status, ip=ip,
+              user_agent=user_agent, method=method)

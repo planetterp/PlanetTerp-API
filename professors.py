@@ -14,6 +14,11 @@ class Professors:
 		type_ = ""
 		reviews = False
 
+		if not utilities.is_int(limit):
+			return limit
+		if not utilities.is_int(offset):
+			return offset
+
 		PROFESSOR_TYPES = ['professor', 'ta']
 		if 'type' in data:
 			if not data['type'] in PROFESSOR_TYPES:

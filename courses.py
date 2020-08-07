@@ -14,11 +14,6 @@ class Courses:
 		department = ""
 		reviews = False
 
-		if not utilities.is_int(limit):
-			return limit
-		if not utilities.is_int(offset):
-			return offset
-
 		if 'department' in data:
 			if len(data['department']) != 4:
 				return utilities.api_error("department parameter must be 4 characters")

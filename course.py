@@ -9,10 +9,10 @@ class Course:
 		web.header('Content-Type', 'application/json')
 		data = web.input()
 
-		reviews = False
-
 		if not 'name' in data:
 			return utilities.api_error("name parameter is required")
+
+		reviews = False
 
 		if 'reviews' in data:
 			if not data['reviews'] in utilities.TRUE_FALSE:

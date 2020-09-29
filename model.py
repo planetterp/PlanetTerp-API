@@ -145,5 +145,10 @@ def get_average_rating(professor_id):
 
 	return rating[0]['average_rating']
 
+def get_semesters():
+	semesters_list = db.query('SELECT DISTINCT semester FROM grades')
+	
+	return [semester['semester'] for semester in semesters_list]
+
 def insert_view (page, status, ip, user_agent, method):
 	db.insert('views', page = page, status = status, ip = ip, user_agent = user_agent, method = method)

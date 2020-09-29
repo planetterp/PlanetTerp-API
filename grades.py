@@ -31,7 +31,7 @@ class Grades:
 			options.append("course_id = {}".format(course_id))
 
 		if 'semester' in data:
-			possible_semesters = ["201201", "201208", "201301", "201308", "201401", "201408", "201501", "201508", "201601", "201608", "201701", "201708", "201801", "201808", "201901", "201908"]
+			possible_semesters = model.get_semesters()
 
 			if not data['semester'] in possible_semesters:
 				return utilities.api_error("invalid semester parameter; semester parameter must be one of the following: " + ', '.join(possible_semesters))
@@ -82,3 +82,4 @@ class Grades:
 			})
 
 		return json.dumps(grades_data)
+		

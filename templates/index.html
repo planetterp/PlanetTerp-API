@@ -306,7 +306,7 @@
 <p>First, we read input from the user:</p>
 
 <div class="center-column"></div>
-<pre class="highlight python tab-python"><code><span class="n">course_name</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">"Enter a course: "</span><span class="p">)</span>
+<pre class="highlight python tab-python"><code><span class="n">course_name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">"Enter a course: "</span><span class="p">)</span>
 </code></pre>
 <p>Next, we get data from the API. We will use the <a href="#planetterp-api-grades">Grades</a> endpoint. Specifically, we will get the grades for a course. To do this, we will use pass the course on the <code>course</code> parameter. The URL to do this is <code>https://api.planetterp.com/v1/grades?course=COURSE_NAME</code>.</p>
 
@@ -316,13 +316,13 @@
 <pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="n">grade_data</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'https://api.planetterp.com/v1/grades?course='</span> <span class="o">+</span> <span class="n">course_name</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="n">grade_data</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">"https://api.planetterp.com/v1/grades?course="</span> <span class="o">+</span> <span class="n">course_name</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 </code></pre>
 <p>Now we report the data to the user:</p>
 
 <div class="center-column"></div>
 <pre class="highlight python tab-python"><code><span class="k">for</span> <span class="n">course_grade_data</span> <span class="ow">in</span> <span class="n">grade_data</span><span class="p">:</span>
-    <span class="k">print</span> <span class="s">"Number of students who received an A in {course} section {section} for semester {semester}: {num_a}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">course</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">'course'</span><span class="p">],</span> <span class="n">section</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">'section'</span><span class="p">],</span> <span class="n">semester</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">'semester'</span><span class="p">],</span> <span class="n">num_a</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">'A'</span><span class="p">]</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Number of students who received an A in {course} section {section} for semester {semester}: {num_a}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">course</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">"course"</span><span class="p">],</span> <span class="n">section</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">"section"</span><span class="p">],</span> <span class="n">semester</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">"semester"</span><span class="p">],</span> <span class="n">num_a</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">"A"</span><span class="p">]</span><span class="p">)</span>
 </code></pre>
 <p>At this point, when the user enters a course, they will be shown the number of students who received an A.</p>
 
@@ -331,25 +331,25 @@
 <p>We can handle this error. If a course is requested on the API, and the course is not found, the following response is returned: <code>{&quot;error&quot;: &quot;course not found&quot;}</code>. Let&#39;s handle this case:</p>
 
 <div class="center-column"></div>
-<pre class="highlight python tab-python"><code><span class="k">if</span> <span class="s">'error'</span> <span class="ow">in</span> <span class="n">grade_data</span> <span class="ow">and</span> <span class="n">grade_data</span><span class="p">[</span><span class="s">'error'</span><span class="p">]</span> <span class="o">==</span> <span class="s">"course not found"</span><span class="p">:</span>
-    <span class="k">print</span> <span class="s">"Error: Course not found."</span>
+<pre class="highlight python tab-python"><code><span class="k">if</span> <span class="s">"error"</span> <span class="ow">in</span> <span class="n">grade_data</span> <span class="ow">and</span> <span class="n">grade_data</span><span class="p">[</span><span class="s">"error"</span><span class="p">]</span> <span class="o">==</span> <span class="s">"course not found"</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Error: Course not found."</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="o">...</span> <span class="k">print</span> <span class="n">out</span> <span class="n">relevant</span> <span class="n">data</span>
+    <span class="o">...</span> <span class="gh"># print out relevant data</span>
 </code></pre>
 <p>That&#39;s it! Here is our program:</p>
 
 <div class="center-column"></div>
 <pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="n">course_name</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">"Enter a course: "</span><span class="p">)</span>
+<span class="n">course_name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">"Enter a course: "</span><span class="p">)</span>
 
-<span class="n">grade_data</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'https://api.planetterp.com/v1/grades?course='</span> <span class="o">+</span> <span class="n">course_name</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="n">grade_data</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">"https://api.planetterp.com/v1/grades?course="</span> <span class="o">+</span> <span class="n">course_name</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 
-<span class="k">if</span> <span class="s">'error'</span> <span class="ow">in</span> <span class="n">grade_data</span> <span class="ow">and</span> <span class="n">grade_data</span><span class="p">[</span><span class="s">'error'</span><span class="p">]</span> <span class="o">==</span> <span class="s">"course not found"</span><span class="p">:</span>
-    <span class="k">print</span> <span class="s">"Error: Course not found."</span>
+<span class="k">if</span> <span class="s">"error"</span> <span class="ow">in</span> <span class="n">grade_data</span> <span class="ow">and</span> <span class="n">grade_data</span><span class="p">[</span><span class="s">"error"</span><span class="p">]</span> <span class="o">==</span> <span class="s">"course not found"</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Error: Course not found."</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">course_grade_data</span> <span class="ow">in</span> <span class="n">grade_data</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s">"Number of students who received an A in {course} section {section} for semester {semester}: {num_a}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">course</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">'course'</span><span class="p">],</span> <span class="n">section</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">'section'</span><span class="p">],</span> <span class="n">semester</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">'semester'</span><span class="p">],</span> <span class="n">num_a</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">'A'</span><span class="p">])</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Number of students who received an A in {course} section {section} for semester {semester}: {num_a}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">course</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">"course"</span><span class="p">],</span> <span class="n">section</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">"section"</span><span class="p">],</span> <span class="n">semester</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">"semester"</span><span class="p">],</span> <span class="n">num_a</span> <span class="o">=</span> <span class="n">course_grade_data</span><span class="p">[</span><span class="s">"A"</span><span class="p">])</span><span class="p">)</span>
 </code></pre>
 <h1 id="planetterp-api-courses">Courses</h1>
 <h2 id='get-a-course'>Get a course</h2><pre class="highlight shell tab-shell"><code><span class="c"># You can also use wget</span>
@@ -482,10 +482,10 @@ curl -X GET https://api.planetterp.com/v1/course?name<span class="o">=</span>MAT
 </tr>
 </tbody></table>
 
-<!-- 
+<!--
  -->
 
-<!-- 
+<!--
 
 <h3 id="get-a-course-responses">Responses</h3>
 
@@ -643,10 +643,10 @@ curl -X GET https://api.planetterp.com/v1/courses?department<span class="o">=</s
 </tr>
 </tbody></table>
 
-<!-- 
+<!--
  -->
 
-<!-- 
+<!--
 
 <h3 id="get-courses-responses">Responses</h3>
 
@@ -824,10 +824,10 @@ curl -X GET https://api.planetterp.com/v1/professor?name<span class="o">=</span>
 </tr>
 </tbody></table>
 
-<!-- 
+<!--
  -->
 
-<!-- 
+<!--
 
 > Example responses
 
@@ -1056,7 +1056,7 @@ curl -X GET https://api.planetterp.com/v1/professors?reviews<span class="o">=</s
 </tr>
 </tbody></table>
 
-<!-- 
+<!--
 #### Enumerated Values
 
 |Parameter|Value|
@@ -1066,7 +1066,7 @@ curl -X GET https://api.planetterp.com/v1/professors?reviews<span class="o">=</s
 
  -->
 
-<!-- 
+<!--
 
 > Example responses
 
@@ -1302,10 +1302,10 @@ curl -X GET https://api.planetterp.com/v1/grades?professor<span class="o">=</spa
 </tr>
 </tbody></table>
 
-<!-- 
+<!--
  -->
 
-<!-- 
+<!--
 
 > Example responses
 

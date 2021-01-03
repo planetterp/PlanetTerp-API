@@ -7,6 +7,8 @@ class Professor:
 	def GET(self):
 		model.insert_view(web.ctx.host + web.ctx.fullpath, web.ctx.status, web.ctx.ip, web.ctx.env['HTTP_USER_AGENT'] if 'HTTP_USER_AGENT' in web.ctx.env else None, "GET")
 		web.header('Content-Type', 'application/json')
+                web.header('Access-Control-Allow-Origin', '*')
+
 		data = web.input()
 
 		reviews = False

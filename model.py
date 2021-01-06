@@ -61,7 +61,7 @@ def get_course_data(course, reviews):
 # todo: find a better way to get professor and reviews
 def get_professor(name, reviews):
 	professor = list(db.query('SELECT professors.id AS id, name, slug, IF(type = 0, "professor", "ta") AS type, GROUP_CONCAT(CONCAT(department, course_number)) AS courses FROM professors LEFT JOIN professor_courses ON professor_courses.professor_id = professors.id LEFT JOIN courses ON courses.id = professor_courses.course_id WHERE professors.verified = TRUE AND name = $name GROUP BY professors.id', vars={'name': name}))
-	
+
 	if len(professor) != 1:
 		return None
 
@@ -84,6 +84,8 @@ def get_professors(limit, offset, type_, reviews):
 def get_professor_data(professor, reviews):
 	if professor['courses']:
 		professor['courses'] = professor['courses'].split(',')
+	else:
+		professor['courses'] = []
 
 	if reviews:
 		professor['reviews'] = []

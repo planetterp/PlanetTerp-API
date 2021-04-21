@@ -154,3 +154,6 @@ def get_semesters():
 
 def insert_view (page, status, ip, user_agent, method):
     db.insert('views', page = page, status = status, ip = ip, user_agent = user_agent, method = method)
+
+def search(search, num_results):
+    return db.query('SELECT name, slug, "professor" AS source FROM professors WHERE verified=true AND name LIKE $search UNION SELECT CONCAT(department, course_number) AS name, CONCAT(department, course_number) AS slug, "course" AS source FROM courses WHERE CONCAT(department, course_number) LIKE $search ORDER BY name ASC LIMIT $num_results', vars={'search': '%{}%'.format(search), 'num_results': num_results})

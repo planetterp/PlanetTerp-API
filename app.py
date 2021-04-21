@@ -9,6 +9,7 @@ import courses
 import professor
 import professors
 import grades
+import search
 
 urls = (
     '/', 'Index',
@@ -17,7 +18,8 @@ urls = (
     '/v1/courses', courses.Courses,
     '/v1/professor', professor.Professor,
     '/v1/professors', professors.Professors,
-    '/v1/grades', grades.Grades
+    '/v1/grades', grades.Grades,
+    '/v1/search', search.Search
 )
 
 web.config.debug = False

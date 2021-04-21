@@ -93,12 +93,12 @@ def get_professor_data(professor, reviews):
         for review in professor_reviews:
             professor['reviews'].append({'professor': professor['name'], 'course': review['course'], 'review': review['review'], 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
 
-    # average_rating = get_average_rating(professor['id'])
+    average_rating = get_average_rating(professor['id'])
 
-    # if average_rating is not None:
-    # 	average_rating = float(average_rating)
+    if average_rating is not None:
+        average_rating = float(average_rating)
 
-    # professor['average_rating'] = average_rating
+    professor['average_rating'] = average_rating
 
     del professor['id']
     return professor
@@ -140,7 +140,7 @@ def get_sections():
     return db.query('SELECT section FROM grades')
 
 def get_average_rating(professor_id):
-    rating = db.query('SELECT SUM(rating)/COUNT(rating) AS average_rating, COUNT(id) as num_reviews FROM reviews WHERE professor_id = $id AND verified = TRUE', vars={'id': professor_id})
+    rating = db.query('SELECT SUM(rating)/COUNT(rating) AS average_rating FROM reviews WHERE professor_id = $id AND verified = TRUE', vars={'id': professor_id})
 
     if len(rating) != 1:
         return None

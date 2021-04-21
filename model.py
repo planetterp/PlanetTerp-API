@@ -91,7 +91,7 @@ def get_professor_data(professor, reviews):
         professor['reviews'] = []
         professor_reviews = get_reviews(professor['id'])
         for review in professor_reviews:
-            professor['reviews'].append({'professor': professor['name'], 'course': review['course'], 'review': review['review'].encode('utf-8'), 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
+            professor['reviews'].append({'professor': professor['name'], 'course': review['course'], 'review': review['review'], 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
 
     # average_rating = get_average_rating(professor['id'])
 

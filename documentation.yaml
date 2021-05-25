@@ -28,21 +28,7 @@ paths:
       operationId: Get a course
       tags:
         - Courses
-      description: |
-        Gets the specified courses.
-
-        > Example response (200):
-
-        ```json
-        {
-        	"department": "MATH",
-        	"course_number": "140",
-        	"title": "Calculus I",
-        	"description": "Introduction to calculus, including functions, limits, continuity, derivatives and applications of the derivative, sketching of graphs of functions, definite and indefinite integrals, and calculation of area. The course is especially recommended for science, engineering and mathematics majors.",
-        	"credits": 4,
-        	"professors": ["Jon Snow", "Tyrion Lannister"]
-        }
-        ```
+      description: Gets the specified courses
       parameters:
         - in: query
           name: name
@@ -60,6 +46,10 @@ paths:
       responses:
         '200':
           description: "Returns course matching query"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
         '400':
           description: "bad input parameter"
   /courses:
@@ -67,23 +57,7 @@ paths:
       operationId: Get courses
       tags:
         - Courses
-      description: |
-        Get all courses, in alphabetical order.
-
-        > Example response (200):
-
-        ```json
-        [
-        	{
-        		"department": "MATH",
-        		"course_number": "140",
-        		"title": "Calculus I",
-        		"description": "Introduction to calculus, including functions, limits, continuity, derivatives and applications of the derivative, sketching of graphs of functions, definite and indefinite integrals, and calculation of area. The course is especially recommended for science, engineering and mathematics majors.",
-        		"credits": 4,
-        		"professors": ["Jon Snow", "Tyrion Lannister"]
-          }
-        ]
-        ```
+      description: Get all courses, in alphabetical order
       parameters:
         - in: query
           name: department
@@ -103,6 +77,12 @@ paths:
       responses:
         '200':
           description: "Returns courses matching query"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
         '400':
           description: "bad input parameter"
   /professor:
@@ -121,27 +101,6 @@ paths:
         For example, Jon Snow's slug might be <code>snow</code>.
         <br/><br/>
         </aside>
-
-        > Example response (200):
-
-        ```json
-        {
-        	"name": "Jon Snow",
-        	"type": "professor",
-        	"slug": "snow",
-        	"courses": ["MATH140", "MATH141"],
-        	"reviews": [
-        					{
-        						"professor": "Jon Snow",
-        						"course": "MATH140",
-        						"review": "Jon Snow is a great professor!",
-        						"rating": 5,
-        						"expected_grade": "A",
-        						"created": "2020-01-01T00:00:00"
-        					}
-        				]
-        }
-        ```
       parameters:
         - in: query
           name: name
@@ -163,9 +122,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Professor'
+                $ref: '#/components/schemas/Professor'
         '400':
           description: "bad input parameter"
   /professors:
@@ -173,31 +130,7 @@ paths:
       operationId: Get all professors
       tags:
         - Professors
-      description: |
-        Get all professors, in alphabetical order.
-
-        > Example response (200):
-
-        ```json
-        [
-        	{
-        		"name": "Jon Snow",
-        		"type": "professor",
-        		"slug": "snow",
-        		"courses": ["MATH140", "MATH141"],
-        		"reviews": [
-        						{
-        							"professor": "Jon Snow",
-        							"course": "MATH140",
-        							"review": "Jon Snow is a great professor!",
-        							"rating": 5,
-        							"expected_grade": "A",
-        							"created": "2020-01-01T00:00:00"
-        						}
-        					]
-        	}
-        ]
-        ```
+      description: Get all professors, in alphabetical order
       parameters:
         - in: query
           name: type
@@ -237,34 +170,6 @@ paths:
         <aside class="notice">
         At least one of <code>course</code> and <code>professor</code> is required.
         </aside>
-
-        > Example response (200):
-
-        ```json
-        [
-        	{
-        		"course": "MATH140",
-        		"professor": "Jon Snow",
-        		"semester": "202001",
-        		"section": "0101",
-        		"A+": 1,
-        		"A": 1,
-        		"A-": 1,
-        		"B+": 1,
-        		"B": 1,
-        		"B-": 1,
-        		"C+": 1,
-        		"C": 1,
-        		"C-": 1,
-        		"D+": 1,
-        		"D": 1,
-        		"D-": 1,
-        		"F": 1,
-        		"W": 1,
-        		"Other": 1
-        	}
-        ]
-        ```
       parameters:
         - in: query
           name: course

@@ -12,7 +12,7 @@ If you find any issues, please open a ticket here, or email us at [admin@planett
 
 We build the docs with [widdershins](https://github.com/Mermade/widdershins) and [slate](https://github.com/slatedocs/slate).
 
-First, install widdershins and clone the slate repo, as instructed in the respective setup guides.
+First, install widdershins and clone the slate repo, as instructed in their respective setup guides.
 
 Then run the following, replacing paths as appropriate:
 

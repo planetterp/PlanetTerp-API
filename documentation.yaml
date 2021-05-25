@@ -4,15 +4,17 @@ servers:
     url: https://api.planetterp.com/v1
 info:
   description: >
-    Welcome to <a href="https://planetterp.com">PlanetTerp</a>'s API. This API provides access to data relating to courses, professors, and grade data at the <a href="https://umd.edu">University of Maryland &mdash; College Park</a> (UMD).<br /><br />
-    The primary purpose of this API is to provide access to grade data. There is already a student-run API that provides access to professor and course data: <a href="https://umd.io">umd.io</a>.<br /><br />
-    The course and professor data on this website was obtained using a combination of umd.io and <a href="https://app.testudo.umd.edu/soc/">UMD's Schedule of Classes</a>. The grade data is from the <a href="https://www.irpa.umd.edu"">UMD Office of Institutional Research, Planning &amp; Assessment</a> (IRPA) and obtained through <a href="https://www.umd.edu/administration/public-information-request">a request</a> under <a href="http://www.marylandattorneygeneral.gov/OpenGov%20Documents/PIA_manual_printable.pdf">the state of Maryland's Public Information Act</a> (PIA).<br /><br/>
-    The base URL of the API is <a href="https://api.planetterp.com/v1">https://api.planetterp.com/v1</a>.<br /><br />
+    Welcome to <a href="https://planetterp.com">PlanetTerp</a>'s API. This API provides access to data relating to courses, professors, and grade data at the <a href="https://umd.edu">University of Maryland &mdash; College Park</a> (UMD).
+    <br /><br />
+    The primary purpose of this API is to provide access to grade data. There is already a student-run API that provides access to professor and course data: <a href="https://umd.io">umd.io</a>.
+    <br /><br />
+    The course and professor data on this website was obtained using a combination of umd.io and <a href="https://app.testudo.umd.edu/soc/">UMD's Schedule of Classes</a>. The grade data is from the <a href="https://www.irpa.umd.edu"">UMD Office of Institutional Research, Planning &amp; Assessment</a> (IRPA) and obtained through <a href="https://www.umd.edu/administration/public-information-request">a request</a> under <a href="http://www.marylandattorneygeneral.gov/OpenGov%20Documents/PIA_manual_printable.pdf">the state of Maryland's Public Information Act</a> (PIA).
+    <br /><br />
     For support, please email <a href="mailto:admin@planetterp.com">admin@planetterp.com</a>.
+    <br /><br />
+    This API does not require any authentication. There are no hard rate limits, but please take a pause between each request.
   version: "1"
   title: PlanetTerp API
-  contact:
-    email: admin@planetterp.com
   # license:
     # name: Apache 2.0
     # url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
@@ -26,8 +28,21 @@ paths:
       operationId: Get a course
       tags:
         - Courses
-      summary: Get a course
-      description: "Get a course."
+      description: |
+        Gets the specified courses.
+
+        > Example response (200):
+
+        ```json
+        {
+        	"department": "MATH",
+        	"course_number": "140",
+        	"title": "Calculus I",
+        	"description": "Introduction to calculus, including functions, limits, continuity, derivatives and applications of the derivative, sketching of graphs of functions, definite and indefinite integrals, and calculation of area. The course is especially recommended for science, engineering and mathematics majors.",
+        	"credits": 4,
+        	"professors": ["Jon Snow", "Tyrion Lannister"]
+        }
+        ```
       parameters:
         - in: query
           name: name
@@ -52,8 +67,23 @@ paths:
       operationId: Get courses
       tags:
         - Courses
-      summary: Get courses
-      description: "Get all courses, in alphabetical order."
+      description: |
+        Get all courses, in alphabetical order.
+
+        > Example response (200):
+
+        ```json
+        [
+        	{
+        		"department": "MATH",
+        		"course_number": "140",
+        		"title": "Calculus I",
+        		"description": "Introduction to calculus, including functions, limits, continuity, derivatives and applications of the derivative, sketching of graphs of functions, definite and indefinite integrals, and calculation of area. The course is especially recommended for science, engineering and mathematics majors.",
+        		"credits": 4,
+        		"professors": ["Jon Snow", "Tyrion Lannister"]
+          }
+        ]
+        ```
       parameters:
         - in: query
           name: department
@@ -80,8 +110,38 @@ paths:
       operationId: Get a professor
       tags:
         - Professors
-      summary: Get a professor.
-      description: "Get a professor."
+      description: |
+        Get the specified professor.
+
+        <aside class="notice">
+        <code>slug</code> is PlanetTerp's identifier for professors. Slugs are unique to a professor and is often, but not always, their last name.
+        <br/><br/>
+        You may find a professor's slug useful to get a unique identifier for professors, or to link to a professor's page on PlanetTerp (via <code>https://planetterp.com/professor/SLUG</code>).
+        <br/><br/>
+        For example, Jon Snow's slug might be <code>snow</code>.
+        <br/><br/>
+        </aside>
+
+        > Example response (200):
+
+        ```json
+        {
+        	"name": "Jon Snow",
+        	"type": "professor",
+        	"slug": "snow",
+        	"courses": ["MATH140", "MATH141"],
+        	"reviews": [
+        					{
+        						"professor": "Jon Snow",
+        						"course": "MATH140",
+        						"review": "Jon Snow is a great professor!",
+        						"rating": 5,
+        						"expected_grade": "A",
+        						"created": "2020-01-01T00:00:00"
+        					}
+        				]
+        }
+        ```
       parameters:
         - in: query
           name: name
@@ -113,8 +173,31 @@ paths:
       operationId: Get all professors
       tags:
         - Professors
-      summary: Get all professors
-      description: "Get all professors, in alphabetical order."
+      description: |
+        Get all professors, in alphabetical order.
+
+        > Example response (200):
+
+        ```json
+        [
+        	{
+        		"name": "Jon Snow",
+        		"type": "professor",
+        		"slug": "snow",
+        		"courses": ["MATH140", "MATH141"],
+        		"reviews": [
+        						{
+        							"professor": "Jon Snow",
+        							"course": "MATH140",
+        							"review": "Jon Snow is a great professor!",
+        							"rating": 5,
+        							"expected_grade": "A",
+        							"created": "2020-01-01T00:00:00"
+        						}
+        					]
+        	}
+        ]
+        ```
       parameters:
         - in: query
           name: type
@@ -148,8 +231,40 @@ paths:
       operationId: Get grades
       tags:
         - Grades
-      summary: Get grades
-      description: "Get grades for a course, professor, or both. This endpoint returns all of the grades available by section."
+      description: |
+        Get grades for a course, a professor, or both. If by course, returns all of the grades available by section.
+
+        <aside class="notice">
+        At least one of <code>course</code> and <code>professor</code> is required.
+        </aside>
+
+        > Example response (200):
+
+        ```json
+        [
+        	{
+        		"course": "MATH140",
+        		"professor": "Jon Snow",
+        		"semester": "202001",
+        		"section": "0101",
+        		"A+": 1,
+        		"A": 1,
+        		"A-": 1,
+        		"B+": 1,
+        		"B": 1,
+        		"B-": 1,
+        		"C+": 1,
+        		"C": 1,
+        		"C-": 1,
+        		"D+": 1,
+        		"D": 1,
+        		"D-": 1,
+        		"F": 1,
+        		"W": 1,
+        		"Other": 1
+        	}
+        ]
+        ```
       parameters:
         - in: query
           name: course
@@ -198,8 +313,7 @@ paths:
       operationId: Search
       tags:
         - Search
-      summary: Search Professors and Courses
-      description: "Search both professors and courses with a query string. This will match professors and courses which have the query string as a substring of their name."
+      description: Search both professors and courses with a query string. This will match professors and courses which have the query string as a substring of their name.
       parameters:
         - in: query
           name: query

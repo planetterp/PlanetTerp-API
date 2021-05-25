@@ -24,7 +24,7 @@ urls = (
 
 web.config.debug = False
 app = web.application(urls, globals())
-render = web.template.render('templates', globals={'str': str})
+render = web.template.render('static', globals={'str': str})
 
 class Index:
     def GET(self):

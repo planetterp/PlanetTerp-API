@@ -17,9 +17,23 @@ First, install widdershins and clone the slate repo, as instructed in the respec
 Then run the following, replacing paths as appropriate:
 
 ```bash
-widdershins '/Users/tybug/Desktop/coding/PlanetTerp-API/documentation/documentation.yaml' -o '/Users/tybug/Desktop/coding/slate/source/index.html.md' --shallowSchemas true
+widdershins '/Users/tybug/Desktop/coding/PlanetTerp-API/documentation.yaml' -o '/Users/tybug/Desktop/coding/slate/source/index.html.md' --shallowSchemas true
+# cd into slate
+cd /Users/tybug/Desktop/coding/slate/
 # build the html
 bundle exec middleman build
-# run the server locally
+# run the server locally (if you want a preview)
 bundle exec middleman server
+# move the built html files to planetterp-api
+mv build/* /Users/tybug/Desktop/coding/PlanetTerp-API/static
+# delete garbage temp files
+rm /Users/tybug/Desktop/coding/PlanetTerp-API/static/index.html.md.bak
+rm /Users/tybug/Desktop/coding/PlanetTerp-API/static/index.html.md.old
+# double escape dollar signs for webpy
+sed -i '' 's/\$/$$/g' '/Users/tybug/Desktop/coding/PlanetTerp-API/static/index.html'
+# make relative includes play nice with webpy
+sed -i '' 's/stylesheets\//static\/stylesheets\//g' '/Users/tybug/Desktop/coding/PlanetTerp-API/static/index.html'
+sed -i '' 's/images\//static\/images\//g' '/Users/tybug/Desktop/coding/PlanetTerp-API/static/index.html'
+sed -i '' 's/fonts\//static\/fonts\//g' '/Users/tybug/Desktop/coding/PlanetTerp-API/static/index.html'
+sed -i '' 's/javascripts\//static\/javascripts\//g' '/Users/tybug/Desktop/coding/PlanetTerp-API/static/index.html'
 ```

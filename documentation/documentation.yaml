@@ -259,6 +259,7 @@ components:
         - slug
         - type
         - courses
+        - average_rating
       properties:
         name:
           type: string
@@ -275,6 +276,9 @@ components:
           items:
             type: string
             example: 'MATH140'
+        average_rating:
+          type: number
+          example: 4.125
       type: object
     Grades:
       required:

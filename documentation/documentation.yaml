@@ -150,7 +150,6 @@ paths:
         - Grades
       summary: Get grades
       description: "Get grades for a course, professor, or both. This endpoint returns all of the grades available by section."
-      x-oneof: true
       parameters:
         - in: query
           name: course
@@ -201,7 +200,6 @@ paths:
         - Search
       summary: Search Professors and Courses
       description: "Search both professors and courses with a query string. This will match professors and courses which have the query string as a substring of their name."
-      x-oneof: true
       parameters:
         - in: query
           name: query

@@ -107,7 +107,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Professor'
         '400':
-          description: "bad input parameter"   
+          description: "bad input parameter"
   /professors:
     get:
       operationId: Get all professors
@@ -192,6 +192,33 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Grades'
+        '400':
+          description: "bad input parameter"
+  /search:
+    get:
+      operationId: Search
+      tags:
+        - Search
+      summary: Search Professors and Courses
+      description: "Search both professors and courses with a query string. This will match professors and courses which have the query string as a substring of their name."
+      x-oneof: true
+      parameters:
+        - in: query
+          name: query
+          description: "The query to search for"
+          required: true
+          schema:
+            type: string
+            example: "CMSC13"
+      responses:
+        '200':
+          description: "Returns professors and courses matching the query"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Search_Result'
         '400':
           description: "bad input parameter"
 components:
@@ -328,6 +355,23 @@ components:
         Other:
           type: integer
           example: 1
+      type: object
+    Search_Result:
+      required:
+        - name
+        - slug
+        - type
+      properties:
+        name:
+          type: string
+          example: 'CMSC131'
+        slug:
+          type: string
+          example: 'CMSC131'
+        type:
+          type: string
+          enum: [professor, course]
+          example: 'course'
       type: object
   parameters:
     limit:

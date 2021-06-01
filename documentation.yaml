@@ -11,8 +11,6 @@ info:
     The course and professor data on this website was obtained using a combination of umd.io and <a href="https://app.testudo.umd.edu/soc/">UMD's Schedule of Classes</a>. The grade data is from the <a href="https://www.irpa.umd.edu"">UMD Office of Institutional Research, Planning &amp; Assessment</a> (IRPA) and obtained through <a href="https://www.umd.edu/administration/public-information-request">a request</a> under <a href="http://www.marylandattorneygeneral.gov/OpenGov%20Documents/PIA_manual_printable.pdf">the state of Maryland's Public Information Act</a> (PIA).
     <br /><br />
     For support, please email <a href="mailto:admin@planetterp.com">admin@planetterp.com</a>.
-    <br /><br />
-    This API does not require any authentication. There are no hard rate limits, but please take a pause between each request.
   version: "1"
   title: PlanetTerp API
   # license:

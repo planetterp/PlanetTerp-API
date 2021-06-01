@@ -18,6 +18,18 @@ Then run the following, replacing paths as appropriate:
 
 ```bash
 widdershins '/Users/tybug/Desktop/coding/PlanetTerp-API/documentation.yaml' -o '/Users/tybug/Desktop/coding/slate/source/index.html.md' --shallowSchemas true
+# manually add new "usage" section
+sed -i '' 's/<h1 id="planetterp-api-courses">Courses<\/h1>/\
+# Usage\
+\
+The API does not require any authentication. There are no hard rate limits, but please take a pause between each request.\
+\
+The API has a [Python wrapper](https:\/\/github.com\/planetterp\/PlanetTerp-API-Python-Wrapper) on GitHub.\
+\
+If you'\''re new to interacting with APIs, [we'\''ve written an example program in python using the api](https:\/\/gist.github.com\/tybug\/3fcebc8a2b63d471270bda86f0756cdf) for you to follow along with.\
+\
+<h1 id="planetterp-api-courses">Courses<\/h1>\
+/g' '/Users/tybug/Desktop/coding/slate/source/index.html.md'
 # cd into slate
 cd /Users/tybug/Desktop/coding/slate/
 # build the html

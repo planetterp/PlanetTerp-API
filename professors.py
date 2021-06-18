@@ -11,7 +11,7 @@ class Professors:
 
         data = web.input()
 
-        limit = utilities.get_limit(data)
+        limit = utilities.get_limit(data, 100, 1000)
         offset = utilities.get_offset(data)
         type_ = ""
         reviews = False

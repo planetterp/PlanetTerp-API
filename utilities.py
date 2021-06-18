@@ -15,16 +15,16 @@ def api_error(message):
     web.ctx.status = "400 Bad Request"
     return json.dumps({'error': message})
 
-def get_limit(data):
-    limit = 100
+def get_limit(data, default, max_):
+    limit = default
 
     if 'limit' in data:
         limit = data['limit']
         if not is_int(limit):
-            return api_error("limit parameter must be an integer between 1 and 1000")
+            return api_error(f"limit parameter must be an integer between 1 and {max_}")
         limit = int(limit)
-        if limit < 1 or limit > 1000:
-            return api_error("limit parameter must be an integer between 1 and 1000")
+        if limit < 1 or limit > max_:
+            return api_error(f"limit parameter must be an integer between 1 and {max_}")
     return limit
 
 def get_offset(data):

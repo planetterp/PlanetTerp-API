@@ -70,7 +70,7 @@ paths:
           required: false
           schema:
             type: boolean
-        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/limit-100-1000"
         - $ref: "#/components/parameters/offset"
       responses:
         '200':
@@ -144,7 +144,7 @@ paths:
           example: true
           schema:
             type: boolean
-        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/limit-100-1000"
         - $ref: "#/components/parameters/offset"
       responses:
         '200':
@@ -225,6 +225,8 @@ paths:
           schema:
             type: string
             example: "CMSC13"
+        - $ref: "#/components/parameters/limit-30-100"
+        - $ref: "#/components/parameters/offset"
       responses:
         '200':
           description: "Returns professors and courses matching the query"
@@ -393,7 +395,18 @@ components:
           example: 'course'
       type: object
   parameters:
-    limit:
+    limit-30-100:
+      in: query
+      name: limit
+      description: "Maximum number of records to return. Must be between 1 and 100. Default: <code>30</code>"
+      required: false
+      example: 1
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 30
+    limit-100-1000:
       in: query
       name: limit
       description: "Maximum number of records to return. Must be between 1 and 1000. Default: <code>100</code>"

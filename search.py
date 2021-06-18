@@ -17,7 +17,9 @@ class Search:
             return utilities.api_error("parameters must include \"query\"")
 
         query = data.query
-        results = model.search(query, 30)
+        limit = utilities.get_limit(data, 30, 100)
+        offset = utilities.get_offset(data)
+        results = model.search(query, limit, offset)
 
         results_list = []
         for result in results:

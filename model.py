@@ -9,6 +9,11 @@ def get_courses_professor_teaches(professor_id):
     return db.query('SELECT CONCAT(department, course_number) AS course FROM professor_courses INNER JOIN courses ON professor_courses.course_id = courses.id WHERE professor_id = $id ORDER BY CONCAT(department, course_number) ASC', vars={'id': professor_id}).list()
 
 def get_reviews(professor_id):
+    professor_verified = db.query('SELECT * FROM professors WHERE id = $professor_id AND verified=TRUE', vars={'professor_id': professor_id})
+
+    if len(professor_verified) != 1:
+        return None
+
     return db.query('SELECT *, CONCAT(department, course_number) AS course, reviews.created AS review_created FROM reviews LEFT JOIN courses on reviews.course_id = courses.id WHERE professor_id = $id AND verified = TRUE', vars={'id': professor_id})
 
 def get_reviews_course(course_id):

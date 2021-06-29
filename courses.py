@@ -18,16 +18,16 @@ class Courses:
 
         if 'department' in data:
             if len(data['department']) != 4:
-                return utilities.api_error("department parameter must be 4 characters")
+                raise utilities.api_error("department parameter must be 4 characters")
 
             department = data['department']
 
             if not model.department_has_course(department):
-                return utilities.api_error("no courses found with that department")
+                raise utilities.api_error("no courses found with that department")
 
         if 'reviews' in data:
             if not data['reviews'] in utilities.TRUE_FALSE:
-                return utilities.api_error("reviews parameter must be either true or false")
+                raise utilities.api_error("reviews parameter must be either true or false")
 
             if data['reviews'] == 'true':
                 reviews = True

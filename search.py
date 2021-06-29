@@ -1,6 +1,7 @@
 import web
 import model
 import utilities
+from utilities import JsonBadRequest
 import json
 
 class Search:
@@ -14,7 +15,7 @@ class Search:
         data = web.input()
 
         if "query" not in data:
-            return utilities.api_error("parameters must include \"query\"")
+            raise JsonBadRequest("parameters must include \"query\"")
 
         query = data.query
         limit = utilities.get_limit(data, 30, 100)

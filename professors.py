@@ -1,6 +1,7 @@
 import web
 import model
 import utilities
+from utilities import JsonBadRequest
 import json
 
 class Professors:
@@ -19,13 +20,13 @@ class Professors:
         PROFESSOR_TYPES = ['professor', 'ta']
         if 'type' in data:
             if not data['type'] in PROFESSOR_TYPES:
-                return utilities.api_error("type parameter must be either \"professor\" or \"ta\"")
+                raise JsonBadRequest("type parameter must be either \"professor\" or \"ta\"")
 
             type_ = data['type']
 
         if 'reviews' in data:
             if not data['reviews'] in utilities.TRUE_FALSE:
-                return utilities.api_error("reviews parameter must be either true or false")
+                raise JsonBadRequest("reviews parameter must be either true or false")
 
             if data['reviews'] == 'true':
                 reviews = True

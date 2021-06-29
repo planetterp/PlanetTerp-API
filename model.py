@@ -12,12 +12,12 @@ def get_reviews(professor_id):
     professor_verified = db.query('SELECT * FROM professors WHERE id = $professor_id AND verified=TRUE', vars={'professor_id': professor_id})
 
     if len(professor_verified) != 1:
-        return None
+        return []
 
     return db.query('SELECT *, CONCAT(department, course_number) AS course, reviews.created AS review_created FROM reviews LEFT JOIN courses on reviews.course_id = courses.id WHERE professor_id = $id AND verified = TRUE', vars={'id': professor_id})
 
 def get_reviews_course(course_id):
-    return db.query('SELECT *, reviews.created AS review_created FROM reviews LEFT JOIN professors ON reviews.professor_id = professors.id WHERE course_id = $course_id AND reviews.verified = TRUE AND professors.verified = TRUE', vars={'course_id': course_id})
+    return db.query('SELECT *, reviews.created AS review_created FROM reviews INNER JOIN professors ON reviews.professor_id = professors.id WHERE course_id = $course_id AND reviews.verified = TRUE AND professors.verified = TRUE', vars={'course_id': course_id})
 
 def department_has_course(department):
     department = db.query('SELECT * FROM courses WHERE department = $department', vars={'department': department})

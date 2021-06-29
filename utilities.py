@@ -1,4 +1,3 @@
-import web
 import json
 from web import HTTPError
 

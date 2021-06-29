@@ -14,6 +14,8 @@ We build the docs with [widdershins](https://github.com/Mermade/widdershins) and
 
 First, install widdershins and clone the slate repo, as instructed in their respective setup guides.
 
+Replace the logo in the slate directory `slate/images/logo.png` with PlanetTerp's logo.
+
 Then run the following, replacing paths as appropriate:
 
 ```bash
@@ -26,7 +28,7 @@ The API does not require any authentication. There are no hard rate limits, but 
 \
 The API has a [Python wrapper](https:\/\/github.com\/planetterp\/PlanetTerp-API-Python-Wrapper) on GitHub.\
 \
-If you'\''re new to interacting with APIs, [we'\''ve written an example program in python using the api](https:\/\/gist.github.com\/tybug\/3fcebc8a2b63d471270bda86f0756cdf) for you to follow along with.\
+[We'\''ve written an example program in python using the api](https:\/\/gist.github.com\/tybug\/3fcebc8a2b63d471270bda86f0756cdf) for you to follow along with.\
 \
 <h1 id="planetterp-api-courses">Courses<\/h1>\
 /g' '/Users/tybug/Desktop/coding/slate/source/index.html.md'

@@ -1,6 +1,6 @@
 import web
 import model
-import utilities
+from utilities import JsonBadRequest
 import json
 
 class Grades:
@@ -14,13 +14,13 @@ class Grades:
         options = []
 
         if not 'professor' in data and not 'course' in data:
-            return utilities.api_error("parameters must include at least one of: \"course\", \"professor\"")
+            raise JsonBadRequest("parameters must include at least one of: \"course\", \"professor\"")
 
         if 'professor' in data:
             professor_id = model.get_professor_id(data['professor'])
 
             if not professor_id:
-                return utilities.api_error("professor not found")
+                raise JsonBadRequest("professor not found")
 
             options.append("professor_id = {}".format(professor_id))
 
@@ -28,7 +28,7 @@ class Grades:
             course_id = model.get_course_id(data['course'])
 
             if not course_id:
-                return utilities.api_error("course not found")
+                raise JsonBadRequest("course not found")
 
             options.append("course_id = {}".format(course_id))
 
@@ -36,7 +36,7 @@ class Grades:
             possible_semesters = model.get_semesters()
 
             if not data['semester'] in possible_semesters:
-                return utilities.api_error("invalid semester parameter; semester parameter must be one of the following: " + ', '.join(possible_semesters))
+                raise JsonBadRequest("invalid semester parameter; semester parameter must be one of the following: " + ', '.join(possible_semesters))
 
             options.append("semester = '{}'".format(data['semester']))
 
@@ -45,7 +45,7 @@ class Grades:
 
             # todo: more efficient way of doing this?
             if not any(section['section'] == data['section'] for section in all_sections):
-                return utilities.api_error("invalid section; example of a valid section: 0101")
+                raise JsonBadRequest("invalid section; example of a valid section: 0101")
 
             options.append("section = '{}'".format(data['section']))
 

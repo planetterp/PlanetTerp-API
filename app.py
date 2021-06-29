@@ -9,6 +9,7 @@ import courses
 import professor
 import professors
 import grades
+import search
 
 urls = (
     '/', 'Index',
@@ -17,12 +18,13 @@ urls = (
     '/v1/courses', courses.Courses,
     '/v1/professor', professor.Professor,
     '/v1/professors', professors.Professors,
-    '/v1/grades', grades.Grades
+    '/v1/grades', grades.Grades,
+    '/v1/search', search.Search
 )
 
 web.config.debug = False
 app = web.application(urls, globals())
-render = web.template.render('templates', globals={'str': str})
+render = web.template.render('static', globals={'str': str})
 
 class Index:
     def GET(self):

@@ -1,6 +1,7 @@
 import web
 import model
 import utilities
+from utilities import JsonBadRequest
 import json
 
 class Professor:
@@ -14,11 +15,11 @@ class Professor:
         reviews = False
 
         if not 'name' in data:
-            return utilities.api_error("name parameter is required")
+            raise JsonBadRequest("name parameter is required")
 
         if 'reviews' in data:
             if not data['reviews'] in utilities.TRUE_FALSE:
-                return utilities.api_error("reviews parameter must be either true or false")
+                raise JsonBadRequest("reviews parameter must be either true or false")
 
             if data['reviews'] == 'true':
                 reviews = True
@@ -26,6 +27,6 @@ class Professor:
         professor = model.get_professor(data['name'], reviews)
 
         if not professor:
-            return utilities.api_error("professor not found")
+            raise JsonBadRequest("professor not found")
 
         return json.dumps(professor)

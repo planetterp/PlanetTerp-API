@@ -1,6 +1,7 @@
 import web
 import model
 import utilities
+from utilities import JsonBadRequest
 import json
 
 class Course:
@@ -12,13 +13,13 @@ class Course:
         data = web.input()
 
         if not 'name' in data:
-            return utilities.api_error("name parameter is required")
+            raise JsonBadRequest("name parameter is required")
 
         reviews = False
 
         if 'reviews' in data:
             if not data['reviews'] in utilities.TRUE_FALSE:
-                return utilities.api_error("reviews parameter must be either true or false")
+                raise JsonBadRequest("reviews parameter must be either true or false")
 
             if data['reviews'] == 'true':
                 reviews = True
@@ -26,6 +27,6 @@ class Course:
         course = model.get_course(data['name'], reviews)
 
         if not course:
-            return utilities.api_error("course not found")
+            raise JsonBadRequest("course not found")
 
         return json.dumps(course)

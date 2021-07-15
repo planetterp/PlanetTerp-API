@@ -249,6 +249,7 @@ components:
         - description
         - credits
         - professors
+        - average_gpa
       properties:
         department:
           type: string

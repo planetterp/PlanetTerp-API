@@ -270,6 +270,9 @@ components:
           items:
             type: string
             example: ["Jon Snow", "Tyrion Lannister"]
+        average_gpa:
+          type: number
+          example: 3.17244
     Professor:
       required:
         - name

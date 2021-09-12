@@ -54,11 +54,21 @@ def get_course_data(course, reviews):
     else:
         course['professors'] = []
 
+    course['average_gpa'] = get_average_gpa(course["id"])
+
     if reviews:
         course['reviews'] = []
         course_reviews = get_reviews_course(course['id'])
         for review in course_reviews:
-            course['reviews'].append({'professor': review['name'], 'course': course['department'] + course['course_number'], 'review': review['review'], 'rating': review['rating'], 'expected_grade': review['expected_grade'], 'created': review['review_created'].isoformat()})
+            data = {
+                'professor': review['name'],
+                'course': course['department'] + course['course_number'],
+                'review': review['review'],
+                'rating': review['rating'],
+                'expected_grade': review['expected_grade'],
+                'created': review['review_created'].isoformat()
+            }
+            course['reviews'].append(data)
 
     del course['id']
     return course
@@ -151,6 +161,10 @@ def get_average_rating(professor_id):
         return None
 
     return rating[0]['average_rating']
+
+def get_average_gpa(course_id):
+    average_gpa = db.query('SELECT (SUM(APLUS)*4.0 + SUM(A)*4.0 + SUM(AMINUS)*3.7 + SUM(BPLUS)*3.3 + SUM(B)*3.0 + SUM(BMINUS)*2.7 + SUM(CPLUS)*2.3 + SUM(C)*2.0 + SUM(CMINUS)*1.7 + SUM(DPLUS)*1.3 + SUM(D)*1.0 + SUM(DMINUS)*0.7 + SUM(F)*0.0 + SUM(W)*0.0 + SUM(OTHER)*0.0) / (SUM(num_students) - SUM(OTHER)) AS average_gpa FROM grades WHERE course_id = $course_id', vars={"course_id": course_id})[0]["average_gpa"]
+    return float(average_gpa) if average_gpa else None
 
 def get_semesters():
     semesters_list = db.query('SELECT DISTINCT semester FROM grades')

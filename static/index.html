@@ -571,7 +571,8 @@ curl <span class="nt">-X</span> GET https://api.planetterp.com/v1/course?name<sp
       </span><span class="s2">"Jon Snow"</span><span class="p">,</span><span class="w">
       </span><span class="s2">"Tyrion Lannister"</span><span class="w">
     </span><span class="p">]</span><span class="w">
-  </span><span class="p">]</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"average_gpa"</span><span class="p">:</span><span class="w"> </span><span class="mf">3.17244</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
 <h3 id="get-a-course-responses">Responses</h3>
@@ -781,7 +782,8 @@ curl <span class="nt">-X</span> GET https://api.planetterp.com/v1/courses <span 
         </span><span class="s2">"Jon Snow"</span><span class="p">,</span><span class="w">
         </span><span class="s2">"Tyrion Lannister"</span><span class="w">
       </span><span class="p">]</span><span class="w">
-    </span><span class="p">]</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"average_gpa"</span><span class="p">:</span><span class="w"> </span><span class="mf">3.17244</span><span class="w">
   </span><span class="p">}</span><span class="w">
 </span><span class="p">]</span><span class="w">
 </span></code></pre></div>
@@ -1774,7 +1776,8 @@ This operation does not require authentication
       </span><span class="s2">"Jon Snow"</span><span class="p">,</span><span class="w">
       </span><span class="s2">"Tyrion Lannister"</span><span class="w">
     </span><span class="p">]</span><span class="w">
-  </span><span class="p">]</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"average_gpa"</span><span class="p">:</span><span class="w"> </span><span class="mf">3.17244</span><span class="w">
 </span><span class="p">}</span><span class="w">
 
 </span></code></pre></div><h3 id='properties'>Properties</h3>
@@ -1825,6 +1828,13 @@ This operation does not require authentication
 <tr>
 <td>professors</td>
 <td>[string]</td>
+<td>true</td>
+<td>none</td>
+<td>none</td>
+</tr>
+<tr>
+<td>average_gpa</td>
+<td>number</td>
 <td>true</td>
 <td>none</td>
 <td>none</td>

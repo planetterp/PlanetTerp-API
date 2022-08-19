@@ -2,7 +2,7 @@
 
 This repository holds the old webpy version of the api. The new django version is hosted at the main PlanetTerp repository: https://github.com/planetterp/PlanetTerp. The information below is outdated and left only for historical reference.
 
-# PlanetTerp API
+## PlanetTerp API
 
 This is [PlanetTerp's API](https://api.planetterp.com). [PlanetTerp](https://planetterp.com) is a website designed to help students at the University of Maryland — College Park make informed decisions.
 
